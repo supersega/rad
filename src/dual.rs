@@ -20,6 +20,11 @@ impl Dual {
             der: 0.0,
         }
     }
+
+    /// Value of dual number
+    pub fn val(&self) -> f64 {
+        self.val
+    }
 }
 
 impl From<f64> for Dual {

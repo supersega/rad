@@ -2,8 +2,8 @@ use super::expression::Xpr;
 use crate::dual::Dual;
 
 impl Xpr for Dual {
-    fn eval(&self) -> Dual {
-        self.clone()
+    fn value(&self) -> f64 {
+        self.val()
     }
 }
 
@@ -11,9 +11,8 @@ impl Xpr for Dual {
 mod test {
 use super::*;
 #[test]
-fn test_eval_dual_xpr() {
+fn test_value_dual_xpr() {
     let dual_num = Dual::from(1.0);
-    let new_dual = dual_num.eval();
-    assert_eq!(dual_num, new_dual);
+    assert_eq!(dual_num.value(), 1.0);
 }
 }
