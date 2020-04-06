@@ -1,3 +1,5 @@
+#[macro_use]
+
 pub mod dual;
 pub mod xpr;
 
