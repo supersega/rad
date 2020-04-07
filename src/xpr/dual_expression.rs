@@ -3,7 +3,7 @@ use crate::dual::Dual;
 
 impl Xpr for Dual {
     fn value(&self) -> f64 {
-        self.val()
+        self.val
     }
 }
 

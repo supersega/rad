@@ -3,9 +3,9 @@
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Dual {
     /// Value of Dual number.
-    val: f64,
+    pub(crate) val: f64,
     /// Derivative of Dual number.
-    der: f64,
+    pub(crate) der: f64,
 }
 
 impl Dual {
@@ -19,11 +19,6 @@ impl Dual {
             val,
             der: 0.0,
         }
-    }
-
-    /// Value of dual number
-    pub fn val(&self) -> f64 {
-        self.val
     }
 }
 
