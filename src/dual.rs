@@ -1,4 +1,3 @@
-
 /// Dual number representation.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Dual {

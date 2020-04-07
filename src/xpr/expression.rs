@@ -1,5 +1,3 @@
-use crate::dual::Dual;
-
 /// Expression will be result of Dual number computation
 pub trait Xpr {
     /// Value of expression.

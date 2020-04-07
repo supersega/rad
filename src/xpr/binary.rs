@@ -1,12 +1,8 @@
-use std::ops::{Add, Sub};
+use std::ops::Add;
+use super::assign::Assign;
 use super::expression::{Xpr, XprWrapper};
+use super::operation::Operation;
 use crate::dual::Dual;
-
-/// Operation type.
-#[derive(Copy, Clone, Debug)]
-enum Operation {
-    Add,
-}
 
 /// Structure to hold binary expression.
 #[derive(Copy, Clone, Debug)]
@@ -27,6 +23,20 @@ impl<T: Xpr, U: Xpr> Xpr for BinaryXpr<T, U> {
     }
 }
 
+impl<L: Xpr + Assign, R: Xpr + Assign> Assign for BinaryXpr<L, R> {
+    fn assign(&self, other: &mut Dual) {
+        self.left.assign(other);
+        self.right.assign_op(self.operation, other);
+    }
+
+    fn assign_op(&self, operation: Operation, other: &mut Dual) {
+        // FIXME: a lot of aux variables
+        let mut aux = Dual::new(0.0);
+        self.assign(&mut aux);
+        aux.assign_op(operation, other);
+    }
+}
+
 fn add_expression<L: Xpr, R: Xpr>(left: L, right: R) -> BinaryXpr<L, R> {
     BinaryXpr::<L, R> {
         operation: Operation::Add,
@@ -38,21 +48,28 @@ fn add_expression<L: Xpr, R: Xpr>(left: L, right: R) -> BinaryXpr<L, R> {
 impl Add for Dual {
     type Output = XprWrapper<BinaryXpr<Dual, Dual>>;
     fn add(self, other: Dual) -> Self::Output {
-        XprWrapper::<BinaryXpr<Dual, Dual>>{xpr: add_expression(self, other)}
+        Self::Output{xpr: add_expression(self, other)}
     }
 }
 
 impl<U: Xpr> Add<XprWrapper<U>> for Dual {
     type Output = XprWrapper<BinaryXpr<Dual, U>>;
     fn add(self, other: XprWrapper<U>) -> Self::Output {
-        XprWrapper::<BinaryXpr<Dual, U>>{xpr: add_expression(self, other.xpr)}
+        Self::Output{xpr: add_expression(self, other.xpr)}
     }
 }
 
 impl<T: Xpr, U: Xpr> Add<U> for XprWrapper<T> {
     type Output = XprWrapper<BinaryXpr<T, U>>;
     fn add(self, other: U) -> Self::Output {
-        XprWrapper::<BinaryXpr<T, U>>{xpr: add_expression(self.xpr, other)}
+        Self::Output{xpr: add_expression(self.xpr, other)}
+    }
+}
+
+impl<T: Xpr, U: Xpr> Add<XprWrapper<U>> for XprWrapper<T> {
+    type Output = XprWrapper<BinaryXpr<T, U>>;
+    fn add(self, other: XprWrapper<U>) -> Self::Output {
+        Self::Output{xpr: add_expression(self.xpr, other.xpr)}
     }
 }
 
@@ -66,7 +83,6 @@ mod tests {
         let c = Dual::from(1.0);
         let d = a + b;
         let e = c + d;
-        let f = d + c;
         assert_eq!(e.xpr.value(), e.xpr.value());
     }
 }
