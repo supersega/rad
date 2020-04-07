@@ -67,5 +67,6 @@ mod tests {
         let d = a + b;
         let e = c + d;
         let f = d + c;
+        assert_eq!(e.xpr.value(), e.xpr.value());
     }
 }
