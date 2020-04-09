@@ -6,16 +6,16 @@ use crate::dual::Dual;
 
 /// Structure to hold binary expression.
 #[derive(Copy, Clone, Debug)]
-pub struct BinaryXpr<T: Xpr, U: Xpr> {
+pub struct BinaryXpr<L: Xpr, R: Xpr> {
     /// 'operation' - operation type.
     op: Op,
-    /// 'left' - the left part of expression.
-    left: T,
-    /// 'right' - the right part of expression.
-    right: U,
+    /// 'l' - the left part of expression.
+    left: L,
+    /// 'r' - the right part of expression.
+    right: R,
 }
 
-impl<T: Xpr, U: Xpr> Xpr for BinaryXpr<T, U> {
+impl<L: Xpr, R: Xpr> Xpr for BinaryXpr<L, R> {
     fn value(&self) -> f64 {
         match self.op {
             Op::Add => { self.left.value() + self.right.value() }
@@ -52,23 +52,23 @@ impl Add for Dual {
     }
 }
 
-impl<U: Xpr> Add<XprWrapper<U>> for Dual {
-    type Output = XprWrapper<BinaryXpr<Dual, U>>;
-    fn add(self, other: XprWrapper<U>) -> Self::Output {
+impl<R: Xpr> Add<XprWrapper<R>> for Dual {
+    type Output = XprWrapper<BinaryXpr<Dual, R>>;
+    fn add(self, other: XprWrapper<R>) -> Self::Output {
         Self::Output{xpr: add_expression(self, other.xpr)}
     }
 }
 
-impl<T: Xpr, U: Xpr> Add<U> for XprWrapper<T> {
-    type Output = XprWrapper<BinaryXpr<T, U>>;
-    fn add(self, other: U) -> Self::Output {
+impl<L: Xpr, R: Xpr> Add<R> for XprWrapper<L> {
+    type Output = XprWrapper<BinaryXpr<L, R>>;
+    fn add(self, other: R) -> Self::Output {
         Self::Output{xpr: add_expression(self.xpr, other)}
     }
 }
 
-impl<T: Xpr, U: Xpr> Add<XprWrapper<U>> for XprWrapper<T> {
-    type Output = XprWrapper<BinaryXpr<T, U>>;
-    fn add(self, other: XprWrapper<U>) -> Self::Output {
+impl<L: Xpr, R: Xpr> Add<XprWrapper<R>> for XprWrapper<L> {
+    type Output = XprWrapper<BinaryXpr<L, R>>;
+    fn add(self, other: XprWrapper<R>) -> Self::Output {
         Self::Output{xpr: add_expression(self.xpr, other.xpr)}
     }
 }
