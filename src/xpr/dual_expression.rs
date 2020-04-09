@@ -49,8 +49,8 @@ fn test_value_from_expression() {
     let d = Dual::from(1.0);
     let e = a + b;
     let f = c + d;
-    let g = Dual::from(e + f + e + f + e);
-    let h = Dual::from(a + b + c + d);
-    //assert_eq!(g.val, h.val);
+    let g = Dual::from(e + f);
+    let h = Dual::from(f + e);
+    assert_eq!(g.val, h.val);
 }
 }

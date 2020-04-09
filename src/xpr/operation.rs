@@ -2,5 +2,6 @@
 /// operations, and for assign operation
 #[derive(Copy, Clone, Debug)]
 pub enum Op {
+    /// Add operation
     Add,
 }

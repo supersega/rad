@@ -30,10 +30,21 @@ impl<L: Xpr + Assign, R: Xpr + Assign> Assign for BinaryXpr<L, R> {
     }
 
     fn assign_op(&self, op: Op, other: &mut Dual) {
-        // FIXME: a lot of aux variables
-        let mut aux = Dual::new(0.0);
-        self.assign(&mut aux);
-        aux.assign_op(op, other);
+        match op {
+            Op::Add => {
+                match self.op {
+                    // c += a + b
+                    Op::Add => {
+                        self.left.assign_op(self.op, other);
+                        self.right.assign_op(self.op, other);
+                    }
+                }
+            }
+        }
+        // // FIXME: a lot of aux variables
+        // let mut aux = Dual::new(0.0);
+        // self.assign(&mut aux);
+        // aux.assign_op(op, other);
     }
 }
 
