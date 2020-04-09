@@ -1,4 +1,4 @@
-use super::{assign::Assign, expression::{Xpr, XprWrapper}, operation::Operation};
+use super::{assign::Assign, expression::{Xpr, XprWrapper}, operation::Op};
 use crate::dual::Dual;
 
 impl Xpr for Dual {
@@ -14,9 +14,9 @@ impl Assign for Dual {
         other.der = self.der;
     }
 
-    fn assign_op(&self, operation: Operation, other: &mut Dual) {
-        match operation {
-            Operation::Add => {
+    fn assign_op(&self, op: Op, other: &mut Dual) {
+        match op {
+            Op::Add => {
                 other.val += self.val;
                 other.der += self.der;
             }

@@ -1,5 +1,5 @@
 use crate::dual::Dual;
-use super::operation::Operation;
+use super::operation::Op;
 
 /// Trait to assign expression to Dual number.
 pub trait Assign {
@@ -13,5 +13,5 @@ pub trait Assign {
     /// # Arguments
     /// 'operation' - operation type (+, -, *, /)
     /// 'target' - assign expression into target.
-    fn assign_op(&self, operation: Operation, target: &mut Dual);
+    fn assign_op(&self, op: Op, target: &mut Dual);
 }
