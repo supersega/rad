@@ -7,26 +7,26 @@ use crate::dual::Dual;
 /// Structure to hold binary expression.
 #[derive(Copy, Clone, Debug)]
 pub struct BinaryXpr<L: Xpr, R: Xpr> {
-    /// 'operation' - operation type.
+    /// 'op' - operation type.
     op: Op,
     /// 'l' - the left part of expression.
-    left: L,
+    l: L,
     /// 'r' - the right part of expression.
-    right: R,
+    r: R,
 }
 
 impl<L: Xpr, R: Xpr> Xpr for BinaryXpr<L, R> {
     fn value(&self) -> f64 {
         match self.op {
-            Op::Add => { self.left.value() + self.right.value() }
+            Op::Add => { self.l.value() + self.r.value() }
         }
     }
 }
 
 impl<L: Xpr + Assign, R: Xpr + Assign> Assign for BinaryXpr<L, R> {
     fn assign(&self, other: &mut Dual) {
-        self.left.assign(other);
-        self.right.assign_op(self.op, other);
+        self.l.assign(other);
+        self.r.assign_op(self.op, other);
     }
 
     fn assign_op(&self, op: Op, other: &mut Dual) {
@@ -35,8 +35,8 @@ impl<L: Xpr + Assign, R: Xpr + Assign> Assign for BinaryXpr<L, R> {
                 match self.op {
                     // c += a + b
                     Op::Add => {
-                        self.left.assign_op(self.op, other);
-                        self.right.assign_op(self.op, other);
+                        self.l.assign_op(self.op, other);
+                        self.r.assign_op(self.op, other);
                     }
                 }
             }
@@ -53,28 +53,28 @@ macro_rules! impl_bin_op(
         impl $Op for Dual {
             type Output = XprWrapper<BinaryXpr<Dual, Dual>>;
             fn $op(self, other: Dual) -> Self::Output {
-                Self::Output{xpr: BinaryXpr::<Dual, Dual> { op: Op::$Op, left: self, right: other, } }
+                Self::Output{xpr: BinaryXpr::<Dual, Dual> { op: Op::$Op, l: self, r: other, } }
             }
         }
         
         impl<R: Xpr> $Op<XprWrapper<R>> for Dual {
             type Output = XprWrapper<BinaryXpr<Dual, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
-                Self::Output{xpr: BinaryXpr::<Dual, R> { op: Op::$Op, left: self, right: other.xpr, } }
+                Self::Output{xpr: BinaryXpr::<Dual, R> { op: Op::$Op, l: self, r: other.xpr, } }
             }
         }
         
         impl<L: Xpr, R: Xpr> $Op<R> for XprWrapper<L> {
             type Output = XprWrapper<BinaryXpr<L, R>>;
             fn $op(self, other: R) -> Self::Output {
-                Self::Output{xpr: BinaryXpr::<L, R> { op: Op::$Op, left: self.xpr, right: other, } }
+                Self::Output{xpr: BinaryXpr::<L, R> { op: Op::$Op, l: self.xpr, r: other, } }
             }
         }
         
         impl<L: Xpr, R: Xpr> $Op<XprWrapper<R>> for XprWrapper<L> {
             type Output = XprWrapper<BinaryXpr<L, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
-                Self::Output{xpr: BinaryXpr::<L, R> { op: Op::$Op, left: self.xpr, right: other.xpr, } }
+                Self::Output{xpr: BinaryXpr::<L, R> { op: Op::$Op, l: self.xpr, r: other.xpr, } }
             }
         }
     }
