@@ -48,41 +48,39 @@ impl<L: Xpr + Assign, R: Xpr + Assign> Assign for BinaryXpr<L, R> {
     }
 }
 
-fn add_expression<L: Xpr, R: Xpr>(left: L, right: R) -> BinaryXpr<L, R> {
-    BinaryXpr::<L, R> {
-        op: Op::Add,
-        left,
-        right,
+macro_rules! impl_bin_op(
+    ($Op: ident, $op: ident) => {
+        impl $Op for Dual {
+            type Output = XprWrapper<BinaryXpr<Dual, Dual>>;
+            fn $op(self, other: Dual) -> Self::Output {
+                Self::Output{xpr: BinaryXpr::<Dual, Dual> { op: Op::$Op, left: self, right: other, } }
+            }
+        }
+        
+        impl<R: Xpr> $Op<XprWrapper<R>> for Dual {
+            type Output = XprWrapper<BinaryXpr<Dual, R>>;
+            fn $op(self, other: XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: BinaryXpr::<Dual, R> { op: Op::$Op, left: self, right: other.xpr, } }
+            }
+        }
+        
+        impl<L: Xpr, R: Xpr> $Op<R> for XprWrapper<L> {
+            type Output = XprWrapper<BinaryXpr<L, R>>;
+            fn $op(self, other: R) -> Self::Output {
+                Self::Output{xpr: BinaryXpr::<L, R> { op: Op::$Op, left: self.xpr, right: other, } }
+            }
+        }
+        
+        impl<L: Xpr, R: Xpr> $Op<XprWrapper<R>> for XprWrapper<L> {
+            type Output = XprWrapper<BinaryXpr<L, R>>;
+            fn $op(self, other: XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: BinaryXpr::<L, R> { op: Op::$Op, left: self.xpr, right: other.xpr, } }
+            }
+        }
     }
-}
+);
 
-impl Add for Dual {
-    type Output = XprWrapper<BinaryXpr<Dual, Dual>>;
-    fn add(self, other: Dual) -> Self::Output {
-        Self::Output{xpr: add_expression(self, other)}
-    }
-}
-
-impl<R: Xpr> Add<XprWrapper<R>> for Dual {
-    type Output = XprWrapper<BinaryXpr<Dual, R>>;
-    fn add(self, other: XprWrapper<R>) -> Self::Output {
-        Self::Output{xpr: add_expression(self, other.xpr)}
-    }
-}
-
-impl<L: Xpr, R: Xpr> Add<R> for XprWrapper<L> {
-    type Output = XprWrapper<BinaryXpr<L, R>>;
-    fn add(self, other: R) -> Self::Output {
-        Self::Output{xpr: add_expression(self.xpr, other)}
-    }
-}
-
-impl<L: Xpr, R: Xpr> Add<XprWrapper<R>> for XprWrapper<L> {
-    type Output = XprWrapper<BinaryXpr<L, R>>;
-    fn add(self, other: XprWrapper<R>) -> Self::Output {
-        Self::Output{xpr: add_expression(self.xpr, other.xpr)}
-    }
-}
+impl_bin_op!(Add, add);
 
 #[cfg(test)]
 mod tests {
