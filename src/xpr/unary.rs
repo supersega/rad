@@ -69,13 +69,14 @@ impl_un_op!(Neg, neg);
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    #[test]
-    fn test_neg() {
-        let a = Dual::from(1.0);
-        let b = -Dual::from(1.0);
-        let c = -(a + b);
-        let d = b + a;
-        assert_eq!(c.xpr.value(), -d.xpr.value());
-    }
+use super::*;
+#[test]
+fn test_value_from_neg_expressions() {
+    let a = Dual::from(1.0);
+    let b = Dual::from(2.0);
+    let c = Dual::from(a - b);
+    let d = Dual::from(-(b - a));
+
+    assert_eq!(c.val, d.val);
+}
 }

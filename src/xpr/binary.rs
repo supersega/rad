@@ -114,13 +114,43 @@ impl_bin_op!(Sub, sub);
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    #[test]
-    fn test_add() {
-        let a = Dual::from(1.0);
-        let b = Dual::from(1.0);
-        let c = a + b;
-        let d = b + a;
-        assert_eq!(c.xpr.value(), d.xpr.value());
-    }
+use super::*;
+
+#[test]
+fn test_add() {
+    let a = Dual::from(1.0);
+    let b = Dual::from(1.0);
+    let c = Dual::from(1.0);
+    let d = Dual::from(1.0);
+    let e = a + b;
+    let f = c + d;
+    let g = Dual::from(e + f);
+    let h = Dual::from(f + e);
+    assert_eq!(g.val, h.val);
+    let g = e + f;
+    let h = f + e;
+    assert_eq!(g.xpr.value(), h.xpr.value());
+}
+
+#[test]
+fn test_sub() {
+    let a = Dual::from(1.0);
+    let b = Dual::from(2.0);
+    let c = Dual::from(3.0);
+    let d = Dual::from(4.0);
+    let e = a - b;
+    let f = d - c;
+    let g = Dual::from(e - f);
+    let h = Dual::from(f - e);
+    let j = Dual::from(a - b - d + c);
+    let k = Dual::from(d - c - a + b);
+    assert_eq!(j.val, -k.val);
+    assert_eq!(g.val, -h.val);
+    let g = e - f;
+    let h = f - e;
+    let j = a - b - d + c;
+    let k = d - c - a + b;
+    assert_eq!(j.xpr.value(), -k.xpr.value());
+    assert_eq!(g.xpr.value(), -h.xpr.value());
+}
 }
