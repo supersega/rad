@@ -2,40 +2,62 @@ use std::ops::{Add, Sub};
 use super::{assign::Assign, expression::{Xpr, XprWrapper}, operation::Op};
 use crate::dual::Dual;
 
-/// Structure to hold binary expression.
+/// Struct to hold binary expression left and right parts
 #[derive(Copy, Clone, Debug)]
-pub struct BinXpr<L: Xpr, R: Xpr> {
-    /// 'op' - operation type.
-    op: Op,
+pub struct Binary<L, R> where 
+    L: Xpr + Copy + Clone, R: Xpr + Copy + Clone {
     /// 'l' - the left part of expression.
     l: L,
     /// 'r' - the right part of expression.
     r: R,
 }
 
-impl<L: Xpr, R: Xpr> Xpr for BinXpr<L, R> {
-    fn value(&self) -> f64 {
-        match self.op {
-            Op::Add => { self.l.value() + self.r.value() }
-            Op::Sub => { self.l.value() - self.r.value()}
+/// Binary expression variant.
+#[derive(Copy, Clone, Debug)]
+pub enum BinXpr<L, R> where 
+    L: Xpr + Copy + Clone, R: Xpr + Copy + Clone {
+    /// Add expression variant
+    Add(Binary<L, R>),
+    /// Sub expression variant
+    Sub(Binary<L, R>),
+}
+
+impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> BinXpr<L, R> {
+    /// Left part of expression
+    fn l(&self) -> L { match self { Self::Add(xpr) | Self::Sub(xpr) => { xpr.l } } }
+    /// Right part of expression
+    fn r(&self) -> R { match self { Self::Add(xpr) | Self::Sub(xpr) => { xpr.r } } }
+    fn op(&self) -> Op {
+        match self {
+            Self::Add(_) => { Op::Add }
+            Self::Sub(_) => { Op::Sub }
         }
     }
 }
 
-impl<L: Xpr + Assign, R: Xpr + Assign> Assign for BinXpr<L, R> {
+impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> Xpr for BinXpr<L, R> {
+    fn value(&self) -> f64 {
+        match self {
+            Self::Add(xpr) => { xpr.l.value() + xpr.r.value() }
+            Self::Sub(xpr) => { xpr.l.value() - xpr.r.value() }
+        }
+    }
+}
+
+impl<L: Xpr + Copy + Clone + Assign, R: Xpr + Copy + Clone + Assign> Assign for BinXpr<L, R> {
     fn assign(&self, other: &mut Dual) {
-        self.l.assign(other);
-        self.r.assign_op(self.op, other);
+        self.l().assign(other);
+        self.r().assign_op(self.op(), other);
     }
 
     fn assign_op(&self, op: Op, other: &mut Dual) {
         match op {
             Op::Add | Op::Sub => {
-                match self.op {
+                match self.op() {
                     // c += a + b | c -= a - b | c += a - b | c -= a + b
                     Op::Add | Op::Sub => {
-                        self.l.assign_op(op, other);
-                        self.r.assign_op(self.op, other);
+                        self.l().assign_op(op, other);
+                        self.r().assign_op(self.op(), other);
                     }
                 }
             }
@@ -52,28 +74,28 @@ macro_rules! impl_bin_op(
         impl $Op for Dual {
             type Output = XprWrapper<BinXpr<Dual, Dual>>;
             fn $op(self, other: Dual) -> Self::Output {
-                Self::Output{xpr: BinXpr::<Dual, Dual> { op: Op::$Op, l: self, r: other, } }
+                Self::Output{xpr: BinXpr::<Dual, Dual>::$Op(Binary {l: self, r: other}) }
             }
         }
         
-        impl<R: Xpr> $Op<XprWrapper<R>> for Dual {
+        impl<R: Xpr + Copy + Clone> $Op<XprWrapper<R>> for Dual {
             type Output = XprWrapper<BinXpr<Dual, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
-                Self::Output{xpr: BinXpr::<Dual, R> { op: Op::$Op, l: self, r: other.xpr, } }
+                Self::Output{xpr: BinXpr::<Dual, R>::$Op(Binary {l: self, r: other.xpr}) }
             }
         }
         
-        impl<L: Xpr, R: Xpr> $Op<R> for XprWrapper<L> {
+        impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> $Op<R> for XprWrapper<L> {
             type Output = XprWrapper<BinXpr<L, R>>;
             fn $op(self, other: R) -> Self::Output {
-                Self::Output{xpr: BinXpr::<L, R> { op: Op::$Op, l: self.xpr, r: other, } }
+                Self::Output{xpr: BinXpr::<L, R>::$Op(Binary {l: self.xpr, r: other}) }
             }
         }
         
-        impl<L: Xpr, R: Xpr> $Op<XprWrapper<R>> for XprWrapper<L> {
+        impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> $Op<XprWrapper<R>> for XprWrapper<L> {
             type Output = XprWrapper<BinXpr<L, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
-                Self::Output{xpr: BinXpr::<L, R> { op: Op::$Op, l: self.xpr, r: other.xpr, } }
+                Self::Output{xpr: BinXpr::<L, R>::$Op(Binary {l: self.xpr, r: other.xpr}) }
             }
         }
     }

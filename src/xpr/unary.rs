@@ -1,29 +1,36 @@
 use std::ops::Neg;
-use super::{assign::Assign, expression::{Xpr, XprWrapper}, operation::{Op, UnOp}};
+use super::{assign::Assign, expression::{Xpr, XprWrapper}, operation::{Op}};
 use crate::dual::Dual;
 
-/// Structure to hold unary expression.
+/// Binary expression variant.
 #[derive(Copy, Clone, Debug)]
-pub struct UnXpr<E: Xpr> {
-    /// 'op' - operation type.
-    op: UnOp,
-    /// 'e' - the underlying expression.
-    e: E,
+pub enum UnXpr<E> where 
+    E: Xpr + Copy + Clone {
+    /// Negate expression variant
+    Neg(E),
 }
 
-impl<E: Xpr> Xpr for UnXpr<E> {
+impl<E> UnXpr<E> where 
+    E: Xpr + Copy + Clone {
+    /// Internal expression of Unary
+    fn xpr(&self) -> E { match self { Self::Neg(xpr) => { *xpr } } }
+}
+
+impl<E> Xpr for UnXpr<E> where 
+    E: Xpr + Copy + Clone {
     fn value(&self) -> f64 {
-        match self.op {
-            UnOp::Neg => { -self.e.value() }
+        match self {
+            Self::Neg(e) => { -e.value() }
         }
     }
 }
 
-impl<E: Xpr + Assign> Assign for UnXpr<E> {
+impl<E> Assign for UnXpr<E> where 
+    E: Xpr + Copy + Clone + Assign {
     fn assign(&self, other: &mut Dual) {
-        self.e.assign(other);
-        match self.op {
-            UnOp::Neg => { other.val = -other.val; other.der = -other.der; }
+        self.xpr().assign(other);
+        match self {
+            Self::Neg(_) => { other.val = -other.val; other.der = -other.der; }
         }
     }
 
@@ -39,14 +46,14 @@ macro_rules! impl_un_op(
         impl $Op for Dual {
             type Output = XprWrapper<UnXpr<Dual>>;
             fn $op(self) -> Self::Output {
-                Self::Output{xpr: UnXpr::<Dual> { op: UnOp::$Op, e: self, } }
+                Self::Output{xpr: UnXpr::<Dual>::$Op(self) }
             }
         }
         
-        impl<E: Xpr> $Op for XprWrapper<E> {
+        impl<E: Xpr + Copy + Clone> $Op for XprWrapper<E> {
             type Output = XprWrapper<UnXpr<E>>;
             fn $op(self) -> Self::Output {
-                Self::Output{xpr: UnXpr::<E> { op: UnOp::$Op, e: self.xpr } }
+                Self::Output{xpr: UnXpr::<E>::$Op(self.xpr) }
             }
         }
     }

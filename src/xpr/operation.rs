@@ -7,10 +7,3 @@ pub enum Op {
     /// Sub operation
     Sub,
 }
-
-/// Unary expression type
-#[derive(Copy, Clone, Debug)]
-pub enum UnOp {
-    /// Negate expression
-    Neg,
-}
