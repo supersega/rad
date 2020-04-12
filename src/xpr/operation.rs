@@ -4,4 +4,13 @@
 pub enum Op {
     /// Add operation
     Add,
+    /// Sub operation
+    Sub,
+}
+
+/// Unary expression type
+#[derive(Copy, Clone, Debug)]
+pub enum UnOp {
+    /// Negate expression
+    Neg,
 }
