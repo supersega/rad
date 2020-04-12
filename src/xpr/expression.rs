@@ -10,3 +10,11 @@ pub trait Xpr {
 pub struct XprWrapper<T: Xpr> {
     pub xpr: T
 }
+
+impl<T> XprWrapper<T> where 
+T: Xpr {
+    /// Value of expression wrapper function.
+    pub fn value(&self) -> f64 {
+        self.xpr.value()
+    }
+}

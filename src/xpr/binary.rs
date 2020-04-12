@@ -129,7 +129,7 @@ fn test_add() {
     assert_eq!(g.val, h.val);
     let g = e + f;
     let h = f + e;
-    assert_eq!(g.xpr.value(), h.xpr.value());
+    assert_eq!(g.value(), h.value());
 }
 
 #[test]
@@ -150,7 +150,7 @@ fn test_sub() {
     let h = f - e;
     let j = a - b - d + c;
     let k = d - c - a + b;
-    assert_eq!(j.xpr.value(), -k.xpr.value());
-    assert_eq!(g.xpr.value(), -h.xpr.value());
+    assert_eq!(j.value(), -k.value());
+    assert_eq!(g.value(), -h.value());
 }
 }
