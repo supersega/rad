@@ -1,5 +1,5 @@
 use std::ops::{Add, Sub};
-use super::{assign::Assign, expression::{Xpr, XprWrapper}, operation::Op};
+use super::{assign::Assign, expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
 /// Struct to hold binary expression left and right parts
@@ -25,14 +25,6 @@ pub enum BinXpr<L, R> where
 impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> BinXpr<L, R> {
     /// Left part of expression
     fn l(&self) -> L { match self { Self::Add(xpr) | Self::Sub(xpr) => { xpr.l } } }
-    /// Right part of expression
-    fn r(&self) -> R { match self { Self::Add(xpr) | Self::Sub(xpr) => { xpr.r } } }
-    fn op(&self) -> Op {
-        match self {
-            Self::Add(_) => { Op::Add }
-            Self::Sub(_) => { Op::Sub }
-        }
-    }
 }
 
 impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> Xpr for BinXpr<L, R> {
@@ -45,28 +37,44 @@ impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> Xpr for BinXpr<L, R> {
 }
 
 impl<L: Xpr + Copy + Clone + Assign, R: Xpr + Copy + Clone + Assign> Assign for BinXpr<L, R> {
-    fn assign(&self, other: &mut Dual) {
-        self.l().assign(other);
-        self.r().assign_op(self.op(), other);
+    fn assign(&self, target: &mut Dual) {
+        self.l().assign(target);
+        match self {
+            Self::Add(xpr) => { xpr.r.assign_add(target); }
+            Self::Sub(xpr) => { xpr.r.assign_sub(target); }
+        }
     }
 
-    fn assign_op(&self, op: Op, other: &mut Dual) {
-        match op {
-            Op::Add | Op::Sub => {
-                match self.op() {
-                    // c += a + b | c -= a - b | c += a - b | c -= a + b
-                    Op::Add | Op::Sub => {
-                        self.l().assign_op(op, other);
-                        self.r().assign_op(self.op(), other);
-                    }
-                }
+    fn assign_add(&self, target: &mut Dual) {
+        match self {
+            Self::Add(xpr) => {
+                xpr.l.assign_add(target);
+                xpr.r.assign_add(target);
+            }
+            Self::Sub(xpr) => {
+                xpr.l.assign_add(target);
+                xpr.r.assign_sub(target);
             }
         }
-        // // FIXME: a lot of aux variables
-        // let mut aux = Dual::new(0.0);
-        // self.assign(&mut aux);
-        // aux.assign_op(op, other);
     }
+
+    fn assign_sub(&self, target: &mut Dual) {
+        match self {
+            Self::Add(xpr) => {
+                xpr.l.assign_sub(target);
+                xpr.r.assign_sub(target);
+            }
+            Self::Sub(xpr) => {
+                xpr.l.assign_sub(target);
+                xpr.r.assign_add(target);
+            }
+        }
+    }
+
+    // FIXME: assign other default
+    // let mut aux = Dual::new(0.0);
+    // self.assign(&mut aux);
+    // aux.assign_op(op, other);
 }
 
 macro_rules! impl_bin_op(

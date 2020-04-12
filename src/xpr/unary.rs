@@ -1,5 +1,5 @@
 use std::ops::Neg;
-use super::{assign::Assign, expression::{Xpr, XprWrapper}, operation::{Op}};
+use super::{assign::Assign, expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
 /// Binary expression variant.
@@ -34,10 +34,16 @@ impl<E> Assign for UnXpr<E> where
         }
     }
 
-    fn assign_op(&self, op: Op, other: &mut Dual) {
-        let mut aux = Dual::from(0.0);
-        self.assign(&mut aux);
-        aux.assign_op(op, other);
+    fn assign_add(&self, target: &mut Dual) {
+        match self {
+            Self::Neg(xpr) => { xpr.assign_sub(target) }
+        }
+    }
+
+    fn assign_sub(&self, target: &mut Dual) {
+        match self {
+            Self::Neg(xpr) => { xpr.assign_add(target) }
+        }
     }
 }
 

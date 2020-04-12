@@ -1,4 +1,4 @@
-use super::{assign::Assign, expression::{Xpr, XprWrapper}, operation::Op};
+use super::{assign::Assign, expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
 impl Xpr for Dual {
@@ -14,17 +14,14 @@ impl Assign for Dual {
         other.der = self.der;
     }
 
-    fn assign_op(&self, op: Op, other: &mut Dual) {
-        match op {
-            Op::Add => {
-                other.val += self.val;
-                other.der += self.der;
-            }
-            Op::Sub => {
-                other.val -= self.val;
-                other.der -= self.der;
-            }
-        }
+    fn assign_add(&self, target: &mut Dual) {
+        target.val += self.val;
+        target.der += self.der;
+    }
+
+    fn assign_sub(&self, target: &mut Dual) {
+        target.val -= self.val;
+        target.der -= self.der;
     }
 }
 
@@ -72,5 +69,15 @@ fn test_value_from_sub_expressions() {
     let k = Dual::from(d - c - a + b);
     assert_eq!(j.val, -k.val);
     assert_eq!(g.val, -h.val);
+}
+
+#[test]
+fn test_value_from_neg_expressions() {
+    let a = Dual::from(1.0);
+    let b = Dual::from(2.0);
+    let c = Dual::from(a - b);
+    let d = Dual::from(-(b - a));
+
+    assert_eq!(c.val, d.val);
 }
 }
