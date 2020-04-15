@@ -70,18 +70,6 @@ impl<E> Assign for SinXpr<E> where
         other.val = other.val.sin();
         other.der *= other.val.cos();
     }
-
-    fn assign_add(&self, target: &mut Dual) {
-        let mut aux: Dual = 0.0.into();
-        self.assign(&mut aux);
-        aux.assign_add(target);
-    }
-
-    fn assign_sub(&self, target: &mut Dual) {
-        let mut aux: Dual = 0.0.into();
-        self.assign(&mut aux);
-        aux.assign_sub(target);
-    }
 }
 
 macro_rules! define_and_impl_un_op (

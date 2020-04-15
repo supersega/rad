@@ -2,11 +2,6 @@ use std::ops::{Add, Sub};
 use super::{assign::Assign, constant::ConstantXpr, expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
-// FIXME: assign other default
-// let mut aux = Dual::new(0.0);
-// self.assign(&mut aux);
-// aux.assign_op(op, other);
-
 /// Declare binary expression structure
 macro_rules! binary_xpr (
     ($Name: ident) => {
@@ -22,7 +17,6 @@ macro_rules! binary_xpr (
 );
 
 binary_xpr!(AddXpr);
-binary_xpr!(SubXpr);
 
 /// Implement Xpr for AddXpr
 impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> Xpr for AddXpr<L, R> {
@@ -46,6 +40,8 @@ impl<L: Xpr + Copy + Clone + Assign, R: Xpr + Copy + Clone + Assign> Assign for 
         self.r.assign_sub(target);
     }
 }
+
+binary_xpr!(SubXpr);
 
 /// Implement Xpr for SubXpr
 impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> Xpr for SubXpr<L, R> {

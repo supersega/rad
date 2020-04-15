@@ -1,6 +1,8 @@
 use crate::dual::Dual;
 
-/// Trait to assign expression to Dual number.
+/// Trait to assign expression to Dual number. By 
+/// default assign_add, assign_sub create temporary
+/// variables, for some cases we can optimize that.
 pub trait Assign {
     /// Assign expression to Dual number.
     /// 
@@ -12,11 +14,26 @@ pub trait Assign {
     /// 
     /// # Arguments
     /// 'target' - assign expression into target.
-    fn assign_add(&self, target: &mut Dual);
+    /// 
+    /// # Node
+    /// Should be overridden if operation
+    /// can avoid temporary variables
+    fn assign_add(&self, target: &mut Dual) {
+        let mut aux: Dual = 0.0.into();
+        self.assign(&mut aux);
+        aux.assign_add(target);
+    }
 
     /// Assign add operation to Dual number.
     /// 
     /// # Arguments
     /// 'target' - assign expression into target.
-    fn assign_sub(&self, target: &mut Dual);
+    /// # Node
+    /// Should be overridden if operation
+    /// can avoid temporary variables
+    fn assign_sub(&self, target: &mut Dual) {
+        let mut aux: Dual = 0.0.into();
+        self.assign(&mut aux);
+        aux.assign_sub(target);
+    }
 }
