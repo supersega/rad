@@ -1,5 +1,5 @@
 use std::ops::{Add, Sub};
-use super::{assign::Assign, expression::{Xpr, XprWrapper}};
+use super::{assign::Assign, constant::ConstantXpr, expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
 /// Struct to hold binary expression left and right parts
@@ -106,6 +106,34 @@ macro_rules! impl_bin_op(
                 Self::Output{xpr: BinXpr::<L, R>::$Op(Binary {l: self.xpr, r: other.xpr}) }
             }
         }
+
+        impl $Op<f64> for Dual {
+            type Output = XprWrapper<BinXpr<Dual, ConstantXpr>>;
+            fn $op(self, other: f64) -> Self::Output {
+                Self::Output{xpr: BinXpr::<Dual, ConstantXpr>::$Op(Binary {l: self, r: other.into()}) }
+            }
+        }
+
+        impl $Op<Dual> for f64 {
+            type Output = XprWrapper<BinXpr<ConstantXpr, Dual>>;
+            fn $op(self, other: Dual) -> Self::Output {
+                Self::Output{xpr: BinXpr::<ConstantXpr, Dual>::$Op(Binary {l: self.into(), r: other}) }
+            }
+        }
+
+        impl<L: Xpr + Copy + Clone> $Op<f64> for XprWrapper<L> {
+            type Output = XprWrapper<BinXpr<L, ConstantXpr>>;
+            fn $op(self, other: f64) -> Self::Output {
+                Self::Output{xpr: BinXpr::<L, ConstantXpr>::$Op(Binary {l: self.xpr, r: other.into()}) }
+            }
+        }
+
+        impl<R: Xpr + Copy + Clone> $Op<XprWrapper<R>> for f64 {
+            type Output = XprWrapper<BinXpr<ConstantXpr, R>>;
+            fn $op(self, other: XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: BinXpr::<ConstantXpr, R>::$Op(Binary {l: self.into(), r: other.xpr}) }
+            }
+        }
     }
 );
 
@@ -130,6 +158,14 @@ fn test_add() {
     let g = e + f;
     let h = f + e;
     assert_eq!(g.value(), h.value());
+}
+
+#[test]
+fn test_add_dual_and_f64() {
+    let a = Dual::from(1.0);
+    let b = a + 5.0;
+    let c = 5.0 + a;
+    assert_eq!(b.xpr.value(), c.xpr.value());
 }
 
 #[test]
