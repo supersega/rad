@@ -2,70 +2,54 @@ use std::ops::Neg;
 use super::{assign::Assign, expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
-/// Binary expression variant.
+/// Negate expression
 #[derive(Copy, Clone, Debug)]
-pub enum UnXpr<E> where 
-    E: Xpr + Copy + Clone {
-    /// Negate expression variant
-    Neg(E),
+pub struct NegXpr<Arg> where 
+    Arg: Xpr + Copy + Clone {
+    arg: Arg,
 }
 
-impl<E> UnXpr<E> where 
-    E: Xpr + Copy + Clone {
-    /// Internal expression of Unary
-    fn xpr(&self) -> E { match self { Self::Neg(xpr) => { *xpr } } }
+impl<Arg> Xpr for NegXpr<Arg> where 
+    Arg: Xpr + Copy + Clone {
+    fn value(&self) -> f64 { - self.arg.value() }
 }
 
-impl<E> Xpr for UnXpr<E> where 
-    E: Xpr + Copy + Clone {
-    fn value(&self) -> f64 {
-        match self {
-            Self::Neg(e) => { -e.value() }
-        }
-    }
-}
-
-impl<E> Assign for UnXpr<E> where 
+impl<E> Assign for NegXpr<E> where 
     E: Xpr + Copy + Clone + Assign {
     fn assign(&self, other: &mut Dual) {
-        self.xpr().assign(other);
-        match self {
-            Self::Neg(_) => { other.val = -other.val; other.der = -other.der; }
-        }
+        self.arg.assign(other);
+        other.val = -other.val;
+        other.der = -other.der;
     }
 
     fn assign_add(&self, target: &mut Dual) {
-        match self {
-            Self::Neg(xpr) => { xpr.assign_sub(target) }
-        }
+        self.arg.assign_sub(target);
     }
 
     fn assign_sub(&self, target: &mut Dual) {
-        match self {
-            Self::Neg(xpr) => { xpr.assign_add(target) }
-        }
+        self.arg.assign_add(target);
     }
 }
 
 macro_rules! impl_un_op(
-    ($Op: ident, $op: ident) => {
+    ($Op: ident, $op: ident, $Res: ident) => {
         impl $Op for Dual {
-            type Output = XprWrapper<UnXpr<Dual>>;
+            type Output = XprWrapper<$Res<Dual>>;
             fn $op(self) -> Self::Output {
-                Self::Output{xpr: UnXpr::<Dual>::$Op(self) }
+                Self::Output{xpr: $Res{ arg: self } }
             }
         }
         
         impl<E: Xpr + Copy + Clone> $Op for XprWrapper<E> {
-            type Output = XprWrapper<UnXpr<E>>;
+            type Output = XprWrapper<$Res<E>>;
             fn $op(self) -> Self::Output {
-                Self::Output{xpr: UnXpr::<E>::$Op(self.xpr) }
+                Self::Output{xpr: $Res{ arg: self.xpr } }
             }
         }
     }
 );
 
-impl_un_op!(Neg, neg);
+impl_un_op!(Neg, neg, NegXpr);
 
 #[cfg(test)]
 mod tests {
