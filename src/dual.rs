@@ -1,10 +1,15 @@
+/// Use this CopyCell to allow eval gradient for immutable duals.
+use toolshed::CopyCell;
+
 /// Dual number representation.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Dual {
     /// Value of Dual number.
     pub(crate) val: f64,
-    /// Derivative of Dual number.
-    pub(crate) der: f64,
+    /// Derivative of Dual number. This field is "mutable",
+    /// since user don't have access to this field from
+    /// his program.
+    pub(crate) der: CopyCell<f64>,
 }
 
 impl Dual {
@@ -16,7 +21,7 @@ impl Dual {
     pub fn new(val: f64) -> Self {
         Self {
             val,
-            der: 0.0,
+            der: CopyCell::new(0.0),
         }
     }
 }
@@ -25,7 +30,7 @@ impl From<f64> for Dual {
     fn from(val: f64) -> Self {
         Self { 
             val, 
-            der: 0.0,
+            der: CopyCell::new(0.0),
         }
     }
 }
@@ -37,7 +42,7 @@ use super::*;
 fn test_create_new_dual() {
     let x = Dual::new(1.0);
     assert_eq!(x.val, 1.0);
-    assert_eq!(x.der, 0.0);
+    assert_eq!(x.der.get(), 0.0);
 }
 
 #[test]

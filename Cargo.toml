@@ -11,3 +11,4 @@ include = [
 ]
 
 [dependencies]
+toolshed = "0.8.1"

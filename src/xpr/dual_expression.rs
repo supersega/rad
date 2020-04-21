@@ -16,12 +16,12 @@ impl Assign for Dual {
 
     fn assign_add(&self, target: &mut Dual) {
         target.val += self.val;
-        target.der += self.der;
+        target.der.set(target.der.get() + self.der.get());
     }
 
     fn assign_sub(&self, target: &mut Dual) {
         target.val -= self.val;
-        target.der -= self.der;
+        target.der.set(target.der.get() - self.der.get());
     }
 }
 

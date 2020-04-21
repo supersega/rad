@@ -19,7 +19,7 @@ impl<E> Assign for NegXpr<E> where
     fn assign(&self, other: &mut Dual) {
         self.arg.assign(other);
         other.val = -other.val;
-        other.der = -other.der;
+        other.der.set(-other.der.get());
     }
 
     fn assign_add(&self, target: &mut Dual) {
@@ -68,7 +68,7 @@ impl<E> Assign for SinXpr<E> where
     fn assign(&self, other: &mut Dual) {
         self.arg.assign(other);
         other.val = other.val.sin();
-        other.der *= other.val.cos();
+        other.der.set(other.der.get() * other.val.cos());
     }
 }
 
