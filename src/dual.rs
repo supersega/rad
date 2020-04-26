@@ -24,6 +24,11 @@ impl Dual {
             der: CopyCell::new(0.0),
         }
     }
+
+    /// Set der to 1.0 value
+    pub(crate) fn seed(&self) { self.der.set(1.0) }
+    /// Set der to 0.0 value
+    pub(crate) fn unseed(&self) { self.der.set(0.0) }
 }
 
 impl From<f64> for Dual {
