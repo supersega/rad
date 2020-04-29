@@ -26,9 +26,9 @@ impl Dual {
     }
 
     /// Set der to 1.0 value
-    pub(crate) fn seed(&self) { self.der.set(1.0) }
+    pub fn seed(&self) { self.der.set(1.0) }
     /// Set der to 0.0 value
-    pub(crate) fn unseed(&self) { self.der.set(0.0) }
+    pub fn unseed(&self) { self.der.set(0.0) }
 }
 
 impl From<f64> for Dual {

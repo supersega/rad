@@ -1,5 +1,5 @@
 [package]
-name = "rad"
+name = "xprlib"
 version = "0.1.0"
 authors = ["Serhii Malyshev <malyshev13091995@gmail.com>"]
 edition = "2018"
@@ -12,4 +12,3 @@ include = [
 
 [dependencies]
 toolshed = "0.8.1"
-xprlib = { path = "xprlib" }

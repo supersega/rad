@@ -1,7 +1,2 @@
-#[macro_use]
-
-pub mod dual;
-pub mod xpr;
-
-pub use dual::*;
-pub use xpr::*;
+extern crate xprlib;
+pub use xprlib::*;
