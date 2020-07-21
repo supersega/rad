@@ -25,10 +25,14 @@ impl Dual {
         }
     }
 
-    /// Set der to 1.0 value
+    /// Set derivative to 1.0 value
     pub fn seed(&self) { self.der.set(1.0) }
-    /// Set der to 0.0 value
+    /// Set derivative to 0.0 value
     pub fn unseed(&self) { self.der.set(0.0) }
+    /// derivative of dual variable
+    pub fn der(&self) -> f64 { self.der.get() }
+    /// value of dual variable
+    pub fn val(&self) -> f64 { self.val }
 }
 
 impl From<f64> for Dual {

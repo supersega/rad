@@ -1,0 +1,18 @@
+[package]
+name = "adtools"
+version = "0.1.0"
+authors = ["Serhii Malyshev <malyshev13091995@gmail.com>"]
+edition = "2018"
+
+[lib]
+proc-macro = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+xprlib = { path = "../xprlib"}
+proc-macro2 = "1.0.10"
+quote = "1.0.3"
+syn = { version = "1.0.17", features = ["full"] }
+proc-macro-hack = "0.5"
+frunk = "0.3.1"

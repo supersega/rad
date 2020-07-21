@@ -12,4 +12,6 @@ include = [
 
 [dependencies]
 toolshed = "0.8.1"
+proc-macro-hack = "0.5"
+adtools = { path = "adtools" }
 xprlib = { path = "xprlib" }
