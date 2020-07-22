@@ -33,6 +33,13 @@ impl Parse for GradientArgs {
 #[proc_macro_hack]
 pub fn gradient(input: TokenStream) -> TokenStream {
     let GradientArgs {fun, wrt} = parse_macro_input!(input as GradientArgs);
+    // count gradient elements to allocate vector once
+    let count: Vec<_> = wrt.iter().map(|arg| {
+        quote! {
+            cnt += #arg.len();
+        }
+    }).collect();
+    // eval gradient
     let grad = wrt.iter().map(|arg| {
         quote! {
             #arg.iter().for_each(|d| {
@@ -43,9 +50,11 @@ pub fn gradient(input: TokenStream) -> TokenStream {
             })
         }
     });
-    let out = quote! {
-        {
-            let mut ders = Vec::<f64>::new();
+    // make evaluations
+    let out = quote! { {
+            let mut cnt: usize = 0;
+            #(#count;)*
+            let mut ders = Vec::with_capacity(cnt);
             #(#grad;)*
             ders
         }
