@@ -39,9 +39,9 @@ pub fn gradient(input: TokenStream) -> TokenStream {
         }
     }).collect();
     // eval gradient
-    let grad = (&wrt).into_iter().map(|arg| {
+    let grad = wrt.iter().map(|arg| {
         quote! {
-            #(&arg).into_iter().for_each(|d| {
+            #arg.iter().for_each(|d| {
                 d.seed();
                 let v = #fun;
                 d.unseed();
