@@ -28,8 +28,7 @@ impl Parse for GradientArgs {
     }
 }
 
-// Ok, we know how to make gradient in tuple of vecs/args form
-// But how we can create Jacobian???
+/// Gradient of scalar function.
 #[proc_macro_hack]
 pub fn gradient(input: TokenStream) -> TokenStream {
     let GradientArgs {fun, wrt} = parse_macro_input!(input as GradientArgs);
@@ -40,9 +39,9 @@ pub fn gradient(input: TokenStream) -> TokenStream {
         }
     }).collect();
     // eval gradient
-    let grad = wrt.iter().map(|arg| {
+    let grad = (&wrt).into_iter().map(|arg| {
         quote! {
-            #arg.iter().for_each(|d| {
+            #(&arg).into_iter().for_each(|d| {
                 d.seed();
                 let v = #fun;
                 d.unseed();
