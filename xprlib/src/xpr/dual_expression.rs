@@ -23,6 +23,11 @@ impl Assign for Dual {
         target.val -= self.val;
         target.der.set(target.der.get() - self.der.get());
     }
+
+    fn assign_mul(&self, target: &mut Dual) {
+        target.der.set(target.der.get() * self.val + self.der.get() * target.val);
+        target.val *= self.val;
+    }
 }
 
 impl<T: Xpr + Assign> From<XprWrapper<T>> for Dual {
@@ -34,7 +39,7 @@ impl<T: Xpr + Assign> From<XprWrapper<T>> for Dual {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
 use super::*;
 #[test]
 fn test_value_dual_xpr() {

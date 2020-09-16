@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub};
+use std::ops::{Add, Sub, Mul};
 use super::{assign::Assign, constant::ConstantXpr, expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
@@ -39,6 +39,13 @@ impl<L: Xpr + Copy + Clone + Assign, R: Xpr + Copy + Clone + Assign> Assign for 
         self.l.assign_sub(target);
         self.r.assign_sub(target);
     }
+
+    fn assign_mul(&self, target: &mut Dual) {
+        let mut aux: Dual = *target;
+        self.l.assign_mul(target);
+        self.r.assign_mul(&mut aux);
+        aux.assign_add(target);
+    }
 }
 
 binary_xpr!(SubXpr);
@@ -63,6 +70,33 @@ impl<L: Xpr + Copy + Clone + Assign, R: Xpr + Copy + Clone + Assign> Assign for 
     fn assign_sub(&self, target: &mut Dual) {
         self.l.assign_sub(target);
         self.r.assign_add(target);
+    }
+
+    fn assign_mul(&self, target: &mut Dual) {
+        let mut aux: Dual = *target;
+        self.l.assign_mul(target);
+        self.r.assign_mul(&mut aux);
+        aux.assign_sub(target);
+    }
+}
+
+binary_xpr!(MulXpr);
+
+/// Implement Xpr for MulXpr
+impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> Xpr for MulXpr<L, R> {
+    fn value(&self) -> f64 { self.l.value() * self.r.value() }
+}
+
+/// Implement Assign trait for MulXpr
+impl<L: Xpr + Copy + Clone + Assign, R: Xpr + Copy + Clone + Assign> Assign for MulXpr<L, R> {
+    fn assign(&self, target: &mut Dual) {
+        self.l.assign(target);
+        self.r.assign_mul(target);
+    }
+
+    fn assign_mul(&self, target: &mut Dual) {
+        self.l.assign_mul(target);
+        self.l.assign_mul(target);
     }
 }
 
@@ -129,6 +163,7 @@ macro_rules! impl_bin_op(
 
 impl_bin_op!(Add, add, AddXpr);
 impl_bin_op!(Sub, sub, SubXpr);
+impl_bin_op!(Mul, mul, MulXpr);
 
 #[cfg(test)]
 mod tests {
@@ -178,5 +213,21 @@ fn test_sub() {
     let k = d - c - a + b;
     assert_eq!(j.value(), -k.value());
     assert_eq!(g.value(), -h.value());
+}
+
+#[test]
+fn test_mul()
+{
+    let a = Dual::from(1.0);
+    let b = Dual::from(2.0);
+    let c = Dual::from(3.0);
+    let d = Dual::from(4.0);
+
+    let e = a - b;
+    let f = d + c;
+    let g = Dual::from(e * f);
+    let h = Dual::from(f * e);
+
+    assert_ne!(g.val, h.val);
 }
 }

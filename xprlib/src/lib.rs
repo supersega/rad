@@ -6,3 +6,11 @@ pub mod derivative;
 
 pub use dual::*;
 pub use xpr::*;
+
+#[cfg(test)]
+pub mod test {
+    #[test]
+    fn fun() {
+        assert_eq!(1 + 1, 2);
+    }
+}

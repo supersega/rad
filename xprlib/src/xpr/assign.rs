@@ -36,4 +36,17 @@ pub trait Assign {
         self.assign(&mut aux);
         aux.assign_sub(target);
     }
+
+    /// Assign mul operation to Dual number.
+    /// 
+    /// # Arguments
+    /// 'target' - assign expression into target.
+    /// # Node
+    /// Should be overridden if operation
+    /// can avoid temporary variables
+    fn assign_mul(&self, target: &mut Dual) {
+        let mut aux: Dual = 0.0.into();
+        self.assign(&mut aux);
+        aux.assign_mul(target);
+    }
 }

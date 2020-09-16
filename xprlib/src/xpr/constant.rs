@@ -32,4 +32,8 @@ impl Assign for ConstantXpr {
     fn assign_sub(&self, target: &mut Dual) {
         target.val -= self.val;
     }
+
+    fn assign_mul(&self, target: &mut Dual) {
+        target.val *= self.val;
+    }
 }
