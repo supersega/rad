@@ -28,6 +28,11 @@ impl Assign for Dual {
         target.der.set(target.der.get() * self.val + self.der.get() * target.val);
         target.val *= self.val;
     }
+
+    fn assign_div(&self, target: &mut Dual) {
+        target.der.set(-(target.der.get() * self.val - self.der.get() * target.val) / self.val / self.val);
+        target.val /= self.val;
+    }
 }
 
 impl<T: Xpr + Assign> From<XprWrapper<T>> for Dual {

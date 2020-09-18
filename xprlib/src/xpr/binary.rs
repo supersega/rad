@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Mul};
+use std::ops::{Add, Sub, Mul, Div};
 use super::{assign::Assign, constant::ConstantXpr, expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
@@ -102,6 +102,28 @@ impl<L: Xpr + Copy + Clone + Assign, R: Xpr + Copy + Clone + Assign> Assign for 
     }
 }
 
+/// Div expression structure which holds binary expression.
+#[derive(Copy, Clone, Debug)]
+pub struct DivXpr<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone>(BinXpr<L, R>);
+
+/// Implement Xpr for DivXpr
+impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> Xpr for DivXpr<L, R> {
+    fn value(&self) -> f64 { self.0.l.value() / self.0.r.value() }
+}
+
+/// Implement Assign trait for DivXpr
+impl<L: Xpr + Copy + Clone + Assign, R: Xpr + Copy + Clone + Assign> Assign for DivXpr<L, R> {
+    fn assign(&self, target: &mut Dual) {
+        self.0.l.assign(target);
+        self.0.r.assign_div(target);
+    }
+
+    fn assign_mul(&self, target: &mut Dual) {
+        self.0.l.assign_mul(target);
+        self.0.r.assign_div(target);
+    }
+}
+
 macro_rules! impl_bin_op(
     ($Op: ident, $op: ident, $Res: ident) => {
         impl $Op for Dual {
@@ -166,6 +188,7 @@ macro_rules! impl_bin_op(
 impl_bin_op!(Add, add, AddXpr);
 impl_bin_op!(Sub, sub, SubXpr);
 impl_bin_op!(Mul, mul, MulXpr);
+impl_bin_op!(Div, div, DivXpr);
 
 #[cfg(test)]
 mod tests {
@@ -220,16 +243,36 @@ fn test_sub() {
 #[test]
 fn test_mul()
 {
-    let a = Dual::from(1.0);
+    let a = Dual::from(7.0);
+    let b = Dual::from(2.0);
+    let c = Dual::from(3.0);
+    let d = Dual::from(4.0);
+
+    let e = a * b;
+    let f = d * c;
+    let g = Dual::from(a * b * e * f);
+    let h = Dual::from(f * e * b * a);
+
+    println!("g: {}", g.val());
+    println!("h: {}", h.val());
+
+    assert_eq!(g.val, h.val);
+}
+
+#[test]
+fn test_div()
+{
+    let a = Dual::from(7.0);
     let b = Dual::from(2.0);
     let c = Dual::from(3.0);
     let d = Dual::from(4.0);
 
     let e = a - b;
     let f = d + c;
-    let g = Dual::from(e * f);
-    let h = Dual::from(f * e);
+    let g = e / f;
+    let h = f / e;
+    let j = Dual::from(g * h);
 
-    assert_eq!(g.val, h.val);
+    assert_eq!(j.val, 1.0);
 }
 }
