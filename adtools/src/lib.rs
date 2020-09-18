@@ -10,6 +10,40 @@ use syn::{parse_macro_input, parse_quote, Expr, ExprCall, Token};
 extern crate xprlib;
 use xprlib::*;
 
+/// Derivative macro arguments
+struct DerivativeArgs {
+    /// target function to calculate derivative
+    fun: ExprCall,
+    /// variable w.r.t. we want to get derivative
+    wrt: Expr
+}
+
+impl Parse for DerivativeArgs {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let fun: ExprCall = input.parse()?;
+        input.parse::<Token![,]>()?;
+        let wrt: Expr = input.parse()?;
+        Ok(DerivativeArgs {
+            fun,
+            wrt,
+        })
+    }
+}
+
+/// Gradient of scalar function.
+#[proc_macro_hack]
+pub fn derivative(input: TokenStream) -> TokenStream {
+    let DerivativeArgs {fun, wrt} = parse_macro_input!(input as DerivativeArgs);
+    let out = quote! { {
+            #wrt.seed();
+            let gres = #fun;
+            #wrt.unseed();
+            gres.der()
+        }
+    };
+    out.into()
+}
+
 /// Gradient arguments
 struct GradientArgs {
     fun: ExprCall,

@@ -1,4 +1,12 @@
-use rad::{Dual, Xpr, gradient};
+use rad::{Dual, Xpr, gradient, derivative};
+
+#[test]
+fn derivative_test() {
+    let x = Dual::from(2.0);
+    let f = |x: Dual| -> Dual { (x * x * x).into() };
+    let dfdx = derivative!(f(x), x);
+    println!("dfdx: {}", dfdx);
+}
 
 #[test]
 fn gradient_test() {

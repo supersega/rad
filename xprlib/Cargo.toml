@@ -12,3 +12,4 @@ include = [
 
 [dependencies]
 toolshed = "0.8.1"
+quickcheck = { version = "0.9", optional = true }

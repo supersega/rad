@@ -5,3 +5,5 @@ pub use xprlib::*;
 
 #[proc_macro_hack]
 pub use adtools::gradient;
+#[proc_macro_hack]
+pub use adtools::derivative;

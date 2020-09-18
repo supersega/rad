@@ -1,5 +1,8 @@
 /// Use this CopyCell to allow eval gradient for immutable duals.
 use toolshed::CopyCell;
+/// To be able apply property tests
+#[cfg(feature = "quickcheck")]
+extern crate quickcheck;
 
 /// Dual number representation.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -41,6 +44,14 @@ impl From<f64> for Dual {
             val, 
             der: CopyCell::new(0.0),
         }
+    }
+}
+
+
+#[cfg(feature = "quickcheck")]
+impl quickcheck::Arbitrary for Dual {
+    fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> Dual {
+        f64::arbitrary(g).into()
     }
 }
 

@@ -15,3 +15,11 @@ toolshed = "0.8.1"
 proc-macro-hack = "0.5"
 adtools = { path = "adtools" }
 xprlib = { path = "xprlib" }
+
+[dev-dependencies]
+quickcheck = "0.9"
+quickcheck_macros = "0.9"
+toolshed = "0.8.1"
+proc-macro-hack = "0.5"
+adtools = { path = "adtools" }
+xprlib = { path = "xprlib", features = ["quickcheck"] }
