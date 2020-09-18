@@ -98,7 +98,7 @@ impl<L: Xpr + Copy + Clone + Assign, R: Xpr + Copy + Clone + Assign> Assign for 
 
     fn assign_mul(&self, target: &mut Dual) {
         self.0.l.assign_mul(target);
-        self.0.l.assign_mul(target);
+        self.0.r.assign_mul(target);
     }
 }
 
