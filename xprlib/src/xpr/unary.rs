@@ -2,41 +2,45 @@ use std::ops::Neg;
 use super::{assign::Assign, expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
-/// Negate expression
+/// Unary expression holder.
 #[derive(Copy, Clone, Debug)]
-pub struct NegXpr<Arg> where 
-    Arg: Xpr + Copy + Clone {
-    arg: Arg,
+pub struct UnXpr<Op> where Op: Xpr + Copy + Clone {
+    /// operand of current expression.
+    op : Op,
 }
 
-impl<Arg> Xpr for NegXpr<Arg> where 
-    Arg: Xpr + Copy + Clone {
-    fn value(&self) -> f64 { - self.arg.value() }
+/// Negate expression
+#[derive(Copy, Clone, Debug)]
+pub struct NegXpr<Op: Xpr + Copy + Clone>(UnXpr<Op>);
+
+impl<Op> Xpr for NegXpr<Op> where 
+    Op: Xpr + Copy + Clone {
+    fn value(&self) -> f64 { - self.0.op.value() }
 }
 
 impl<E> Assign for NegXpr<E> where 
     E: Xpr + Copy + Clone + Assign {
     fn assign(&self, other: &mut Dual) {
-        self.arg.assign(other);
+        self.0.op.assign(other);
         other.val = -other.val;
         other.der.set(-other.der.get());
     }
 
     fn assign_add(&self, target: &mut Dual) {
-        self.arg.assign_sub(target);
+        self.0.op.assign_sub(target);
     }
 
     fn assign_sub(&self, target: &mut Dual) {
-        self.arg.assign_add(target);
+        self.0.op.assign_add(target);
     }
 
     fn assign_mul(&self, target: &mut Dual) {
-        self.arg.assign_mul(target);
+        self.0.op.assign_mul(target);
         target.neagate();
     }
 
     fn assign_div(&self, target: &mut Dual) {
-        self.arg.assign_div(target);
+        self.0.op.assign_div(target);
         target.neagate();
     }
 }
@@ -46,14 +50,14 @@ macro_rules! impl_un_op(
         impl $Op for Dual {
             type Output = XprWrapper<$Res<Dual>>;
             fn $op(self) -> Self::Output {
-                Self::Output{xpr: $Res{ arg: self } }
+                Self::Output{xpr: $Res(UnXpr{ op: self })}
             }
         }
         
         impl<E: Xpr + Copy + Clone> $Op for XprWrapper<E> {
             type Output = XprWrapper<$Res<E>>;
             fn $op(self) -> Self::Output {
-                Self::Output{xpr: $Res{ arg: self.xpr } }
+                Self::Output{xpr: $Res(UnXpr{ op: self.xpr })}
             }
         }
     }
@@ -63,20 +67,17 @@ impl_un_op!(Neg, neg, NegXpr);
 
 /// Sinus expression
 #[derive(Copy, Clone, Debug)]
-pub struct SinXpr<Arg> where 
-    Arg: Xpr + Copy + Clone {
-    arg: Arg,
-}
+pub struct SinXpr<Op: Xpr + Copy + Clone>(UnXpr<Op>);
 
-impl<Arg> Xpr for SinXpr<Arg> where 
-    Arg: Xpr + Copy + Clone {
-    fn value(&self) -> f64 { self.arg.value().sin() }
+impl<Op> Xpr for SinXpr<Op> where 
+    Op: Xpr + Copy + Clone {
+    fn value(&self) -> f64 { self.0.op.value().sin() }
 }
 
 impl<E> Assign for SinXpr<E> where 
     E: Xpr + Copy + Clone + Assign {
     fn assign(&self, other: &mut Dual) {
-        self.arg.assign(other);
+        self.0.op.assign(other);
         other.val = other.val.sin();
         other.der.set(other.der.get() * other.val.cos());
     }
