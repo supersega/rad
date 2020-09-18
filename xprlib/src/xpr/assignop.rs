@@ -1,4 +1,4 @@
-use std::ops::{AddAssign, SubAssign};
+use std::ops::{AddAssign, SubAssign, MulAssign};
 use super::{assign::Assign, expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
@@ -17,6 +17,7 @@ macro_rules! impl_assign_op(
 
 impl_assign_op!(AddAssign, add_assign, assign_add);
 impl_assign_op!(SubAssign, sub_assign, assign_sub);
+impl_assign_op!(MulAssign, mul_assign, assign_mul);
 
 #[cfg(test)]
 mod tests {
