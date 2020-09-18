@@ -2,7 +2,7 @@ use std::ops::{Add, Sub, Mul};
 use super::{assign::Assign, constant::ConstantXpr, expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
-/// Srtucture which represents binary expression
+/// Structure which represents binary expression
 #[derive(Copy, Clone, Debug)]
 pub struct BinXpr<L, R>
 where  L: Xpr + Copy + Clone, R: Xpr + Copy + Clone {
@@ -13,6 +13,7 @@ where  L: Xpr + Copy + Clone, R: Xpr + Copy + Clone {
 }
 
 /// Add expression structure which holds binary expression.
+#[derive(Copy, Clone, Debug)]
 pub struct AddXpr<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone>(BinXpr<L, R>);
 
 /// Implement Xpr for AddXpr
@@ -46,6 +47,7 @@ impl<L: Xpr + Copy + Clone + Assign, R: Xpr + Copy + Clone + Assign> Assign for 
 }
 
 /// Sub expression structure which holds binary expression.
+#[derive(Copy, Clone, Debug)]
 pub struct SubXpr<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone>(BinXpr<L, R>);
 
 /// Implement Xpr for SubXpr
@@ -79,6 +81,7 @@ impl<L: Xpr + Copy + Clone + Assign, R: Xpr + Copy + Clone + Assign> Assign for 
 }
 
 /// Mul expression structure which holds binary expression.
+#[derive(Copy, Clone, Debug)]
 pub struct MulXpr<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone>(BinXpr<L, R>);
 
 /// Implement Xpr for MulXpr
@@ -227,6 +230,6 @@ fn test_mul()
     let g = Dual::from(e * f);
     let h = Dual::from(f * e);
 
-    assert_ne!(g.val, h.val);
+    assert_eq!(g.val, h.val);
 }
 }
