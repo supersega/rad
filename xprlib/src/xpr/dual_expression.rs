@@ -42,13 +42,3 @@ impl<T: Xpr + Assign> From<XprWrapper<T>> for Dual {
         val
     }
 }
-
-#[cfg(test)]
-mod tests {
-use super::*;
-#[test]
-fn test_value_dual_xpr() {
-    let dual_num = Dual::from(1.0);
-    assert_eq!(dual_num.value(), 1.0);
-}
-}

@@ -94,29 +94,3 @@ macro_rules! define_and_impl_un_op (
 );
 
 define_and_impl_un_op!(Sin, sin, SinXpr);
-
-#[cfg(test)]
-mod tests {
-use super::*;
-#[test]
-fn test_value_from_neg_expressions() {
-    let a = Dual::from(1.0);
-    let b = Dual::from(2.0);
-    let c = Dual::from(a - b);
-    let d = Dual::from(-(b - a));
-
-    assert_eq!(c.val, d.val);
-}
-
-#[test]
-fn test_sin_xpr(){
-    let a = Dual::from(1.0); 
-    let sina1 = a.sin();
-    let sina2 = Dual::sin(a);
-    assert_eq!(sina1.value(), sina2.value());
-    let b = Dual::from(2.0);
-    let sinab1 = (a + b).sin();
-    let sinab2 = XprWrapper::sin(a + b);
-    assert_eq!(sinab1.value(), sinab2.value());
-}
-}
