@@ -36,6 +36,11 @@ impl Dual {
     pub fn der(&self) -> f64 { self.der.get() }
     /// value of dual variable
     pub fn val(&self) -> f64 { self.val }
+    /// negate dual value
+    pub(crate) fn neagate(&mut self) { 
+        self.val = - self.val;
+        self.der.set(-self.der.get());
+    }
 }
 
 impl From<f64> for Dual {

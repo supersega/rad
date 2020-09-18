@@ -29,6 +29,16 @@ impl<E> Assign for NegXpr<E> where
     fn assign_sub(&self, target: &mut Dual) {
         self.arg.assign_add(target);
     }
+
+    fn assign_mul(&self, target: &mut Dual) {
+        self.arg.assign_mul(target);
+        target.neagate();
+    }
+
+    fn assign_div(&self, target: &mut Dual) {
+        self.arg.assign_div(target);
+        target.neagate();
+    }
 }
 
 macro_rules! impl_un_op(
