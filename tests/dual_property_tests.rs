@@ -46,7 +46,7 @@ mod tests_derivative {
     }
 
     #[quickcheck]
-    fn mulproperty(x: Dual) -> bool {
+    fn mul_property(x: Dual) -> bool {
         let f1 = |x: Dual| -> Dual { (x + x).into() };
         let f2 = |x: Dual| -> Dual { (x * x).into() };
         derivative!(|x: Dual| -> Dual { (f1(x) * f2(x)).into() }(x), x) == derivative!(f1(x), x) * f2(x).val() + derivative!(f2(x), x) * f1(x).val()
