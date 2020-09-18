@@ -5,10 +5,9 @@ use proc_macro_hack::proc_macro_hack;
 use quote::{quote};
 use syn::parse::{Parse, ParseStream, Result};
 use syn::punctuated::Punctuated;
-use syn::{parse_macro_input, parse_quote, Expr, ExprCall, Token};
+use syn::{parse_macro_input, Expr, ExprCall, Token};
 
 extern crate xprlib;
-use xprlib::*;
 
 /// Derivative macro arguments
 struct DerivativeArgs {
