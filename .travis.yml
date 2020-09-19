@@ -3,15 +3,10 @@
 
 dist: trusty
 language: rust
-services: docker
 sudo: required
-
-# TODO Rust builds on stable by default, this can be
-# overridden on a case by case basis down below.
 
 env:
   global:
-    # TODO Update this to match the name of your project.
     - CRATE_NAME=rad
 
 matrix:
@@ -44,36 +39,9 @@ install:
 script:
   - bash ci/script.sh
 
-after_script: set +e
-
-deploy:
-  # TODO update `api_key.secure`
-  # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
-  # - Encrypt it: `travis encrypt 0123456789012345678901234567890123456789
-  # - Paste the output down here
-  api_key:
-    secure: cByEEgXf9bstMoBIX1l3um+mfgm6xzzXuGqT/9tT5vESf7SaeCtwCHK4AUAFIY6qs8NIYjDUhZlKdDOZq0ez55vQ7/H3afbPpaJD98DMS4H/ogforfw57cYVNtjfFmC1Aw1IjenA8nyyiMuGlY6D3KZQBSCQNoxw4Q6xQrh7+eJVyDrcXl3aTwKWODuL0CTYO8q6C6D/IQroXd5qp/u537BJ+S1JVYpTt1CgLiiBEQfgGGln0zXfr35GZ49Lu6ETrjNP44ahohmOMiCm5TGBC9TwoWriR3XfBZYFWmPBfRjxjTjhQX5qhoWLVvhW5umb8y3WvN7XvqLidVdAV4nSofdxk5rzg5vWS+F57FksNW1Mx+YUikMktuob7/q7PdjKoQzIL6pzXf70h5Ij8g8c6UWdMAbtPNKY5UjuhvAInb1wGC9arEztwfnH0HnxYRwoFFeXqgGTYPhBwSuymzP/+Dd6l7gvnhnRfvyaMjvrn5ziPXRkrc79Rxbs4unUv/QpPORdrwLD4Z1FdwA6enxuyRZiWxmTzZn1BzOfKOIVWOsl2mxchP7+m12jog3yLaQ0oK1kTFTITqb35lUR29e86rgXJf62uq+yIcuQTlsRBrVROLrvq0BAyMjlcamBgCiw923cjoCui103Qa25m0csLCwXzOCPXh/9r/aATZbO4f0=
-  file_glob: true
-  file: $CRATE_NAME-$TRAVIS_TAG-$TARGET.*
-  on:
-    # TODO Here you can pick which targets will generate binary releases
-    # In this example, there are some targets that are tested using the stable
-    # and nightly channels. This condition makes sure there is only one release
-    # for such targets and that's generated using the stable channel
-    condition: $TRAVIS_RUST_VERSION = stable
-    tags: true
-  provider: releases
-  skip_cleanup: true
-
-cache: cargo
-before_cache:
-  # Travis can't cache files that are not readable by "others"
-  - chmod -R a+r $HOME/.cargo
 
 branches:
   only:
-    # release tags
-    - /^v\d+\.\d+\.\d+.*$/
     - master
 
 notifications:
