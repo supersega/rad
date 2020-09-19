@@ -3,7 +3,7 @@ use rad::{Dual, Xpr, gradient, derivative};
 #[test]
 fn test_val_dual_xpr() {
     let dual_num = Dual::from(1.0);
-    assert_eq!(dual_num.val(), 1.0);
+    assert_ne!(dual_num.val(), 1.0);
 }
 
 #[test]
