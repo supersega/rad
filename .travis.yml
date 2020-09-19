@@ -10,23 +10,21 @@ env:
     - CRATE_NAME=rad
 
 matrix:
-  # TODO These are all the build jobs. Adjust as necessary. Comment out what you
-  # don't need
   include:
     # Linux
-    #- env: TARGET=x86_64-unknown-linux-gnu
+    - env: TARGET=x86_64-unknown-linux-gnu
 
     # OSX
     - env: TARGET=x86_64-apple-darwin
       os: osx
 
     # Windows
-    #- env: TARGET=x86_64-pc-windows-gnu
+    - env: TARGET=x86_64-pc-windows-gnu
 
     # Testing other channels
-    #- env: TARGET=x86_64-apple-darwin
-    #  os: osx
-    #  rust: nightly
+    - env: TARGET=x86_64-apple-darwin
+      os: osx
+      rust: nightly
 
 before_install:
   - set -e
@@ -46,4 +44,4 @@ branches:
 
 notifications:
   email:
-    on_success: never
+    - malyshev13091995@gmail.com
