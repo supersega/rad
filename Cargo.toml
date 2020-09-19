@@ -1,6 +1,5 @@
 [package]
 name = "rad"
-autobins = false
 version = "0.1.0"
 authors = ["Serhii Malyshev <malyshev13091995@gmail.com>"]
 edition = "2018"
