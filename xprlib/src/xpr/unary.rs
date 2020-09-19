@@ -83,15 +83,41 @@ impl<E> Assign for SinXpr<E> where
     }
 }
 
-macro_rules! define_and_impl_un_op (
-    ($Op: ident, $op: ident, $Res: ident) => {
-        /// $Op operation
-        pub trait $Op {
-            type Output;
-            fn $op(self) -> Self::Output;
-        }
-        impl_un_op!($Op, $op, $Res);
+/// Cosinus expression
+#[derive(Copy, Clone, Debug)]
+pub struct CosXpr<Op: Xpr + Copy + Clone>(UnXpr<Op>);
+
+impl<Op> Xpr for CosXpr<Op> where 
+    Op: Xpr + Copy + Clone {
+    fn value(&self) -> f64 { self.0.op.value().cos() }
+}
+
+impl<E> Assign for CosXpr<E> where 
+    E: Xpr + Copy + Clone + Assign {
+    fn assign(&self, other: &mut Dual) {
+        self.0.op.assign(other);
+        other.val = other.val.cos();
+        other.der.set( - other.der.get() * other.val.sin());
+    }
+}
+macro_rules! un_op_dual(
+    ($op: ident, $Res: ident) => {
+        /// $op operation
+        pub fn $op(self) -> XprWrapper<$Res<Dual>> { XprWrapper{xpr: $Res(UnXpr{ op: self })}}
     };
 );
 
-define_and_impl_un_op!(Sin, sin, SinXpr);
+impl Dual {
+    un_op_dual!(sin, SinXpr);
+}
+
+macro_rules! un_op_xpr(
+    ($op: ident, $Res: ident, $E: ident) => {
+        /// $op operation
+        pub fn $op(self) -> XprWrapper<$Res<$E>> { XprWrapper{xpr: $Res(UnXpr{ op: self.xpr })}}
+    };
+);
+
+impl<E: Xpr + Copy + Clone> XprWrapper<E> {
+    un_op_xpr!(sin, SinXpr, E);
+}
