@@ -11,8 +11,38 @@ mod tests_value {
     use super::*;
 
     #[quickcheck]
+    fn keeps_value(val: f64) -> bool {
+        Dual::from(val).val() == val
+    }
+
+    #[quickcheck]
+    fn zero_property(val: Dual) -> bool {
+        Dual::from(val + Dual::from(0.0)) == val
+    }
+
+    #[quickcheck]
+    fn negate_property(val: Dual) -> bool {
+        Dual::from(0.0) == (val + (-val)).into()
+    }
+
+    #[quickcheck]
     fn sum_property(x: Dual, y: Dual) -> bool {
         Dual::from(x + y) == Dual::from(y + x)
+    }
+
+    #[quickcheck]
+    fn neg_property(x: Dual, y: Dual) -> bool {
+        Dual::from(x - y) == Dual::from(-(y - x))
+    }
+
+    #[quickcheck]
+    fn mul_property(x: Dual, y: Dual) -> bool {
+        Dual::from(x * y) == Dual::from(y * x)
+    }
+
+    #[quickcheck]
+    fn distributive_mul_due_sum_property(a: Dual, b: Dual, c: Dual) -> bool {
+        Dual::from((a + b) * c) == Dual::from(a * c + b * c)
     }
 }
 
