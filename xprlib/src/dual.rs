@@ -59,22 +59,3 @@ impl quickcheck::Arbitrary for Dual {
         f64::arbitrary(g).into()
     }
 }
-
-#[cfg(test)]
-mod test {
-use super::*;
-#[test]
-fn test_create_new_dual() {
-    let x = Dual::new(1.0);
-    assert_eq!(x.val, 1.0);
-    assert_eq!(x.der.get(), 0.0);
-}
-
-#[test]
-fn test_from_into_dual() {
-    let val = 2.0;
-    let dual1: Dual = val.into();
-    let dual2 = Dual::from(val);
-    assert_eq!(dual1, dual2);
-}
-}
