@@ -42,6 +42,11 @@ mod tests_value {
     }
 
     #[quickcheck]
+    fn sum_associative_property(a: Dual, b: Dual, c: Dual) -> bool {
+        Dual::from(a + b + c).approx_eq(Dual::from(b + c + a), (EPSILON, ULP))
+    }
+
+    #[quickcheck]
     fn neg_property(x: Dual, y: Dual) -> bool {
         Dual::from(x - y).approx_eq(Dual::from(-(y - x)), F64Margin::default())
     }
@@ -54,6 +59,11 @@ mod tests_value {
     #[quickcheck]
     fn distributive_mul_due_sum_property(a: Dual, b: Dual, c: Dual) -> bool {
         Dual::from((a + b) * c).approx_eq(Dual::from(a * c + b * c), (EPSILON, ULP))
+    }
+
+    #[quickcheck]
+    fn inverse_number_property(x: Dual) -> bool {
+        Dual::from((1.0 / x) * x).approx_eq(1.0.into(), F64Margin::default())
     }
 }
 
