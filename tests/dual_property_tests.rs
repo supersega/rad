@@ -57,6 +57,11 @@ mod tests_value {
     }
 
     #[quickcheck]
+    fn mul_associative_property(a: Dual, b: Dual, c: Dual) -> bool {
+        Dual::from(a * b * c).approx_eq(Dual::from(b * c * a), (EPSILON, ULP))
+    }
+
+    #[quickcheck]
     fn distributive_mul_due_sum_property(a: Dual, b: Dual, c: Dual) -> bool {
         Dual::from((a + b) * c).approx_eq(Dual::from(a * c + b * c), (EPSILON, ULP))
     }
