@@ -22,6 +22,11 @@ mod tests_value {
     }
 
     #[quickcheck]
+    fn unity_property(val: Dual) -> bool {
+        Dual::from(val *  Dual::from(1.0)).approx_eq(val, F64Margin::default())
+    }
+
+    #[quickcheck]
     fn zero_property(val: Dual) -> bool {
         Dual::from(val + Dual::from(0.0)).approx_eq(val, F64Margin::default())
     }
