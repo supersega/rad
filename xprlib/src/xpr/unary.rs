@@ -22,8 +22,7 @@ impl<E> Assign for NegXpr<E> where
     E: Xpr + Copy + Clone + Assign {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
-        other.val = -other.val;
-        other.der.set(-other.der.get());
+        other.neagate();
     }
 
     fn assign_add(&self, target: &mut Dual) {
