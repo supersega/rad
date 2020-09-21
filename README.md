@@ -1,5 +1,7 @@
 # RAD - Rust Automatic Differentiation Library
 
+[![codecov](https://codecov.io/gh/supersega/rad/branch/master/graph/badge.svg)](https://codecov.io/gh/supersega/rad)
+
 ## Scalar function derivative evaluation
 This example shows how to compute derivative of simple function.
 ```rust
