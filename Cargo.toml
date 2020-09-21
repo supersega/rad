@@ -19,7 +19,8 @@ xprlib = { path = "xprlib" }
 [dev-dependencies]
 quickcheck = "0.9"
 quickcheck_macros = "0.9"
+float-cmp = "0.8.0"
 toolshed = "0.8.1"
 proc-macro-hack = "0.5"
 adtools = { path = "adtools" }
-xprlib = { path = "xprlib", features = ["quickcheck"] }
+xprlib = { path = "xprlib", features = ["test-utils"] }
