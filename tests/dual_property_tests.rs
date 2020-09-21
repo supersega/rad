@@ -139,6 +139,14 @@ mod tests_value {
     }
 
     #[quickcheck]
+    fn sum_xpr_ref_xpr_ref_associative_property(a: Dual, b: Dual, c: Dual, d: Dual) -> bool {
+        let l = a + b;
+        let r = c + d;
+        // Cover &XprWrapper && &XprWrapper
+        Dual::from(&l + &r).approx_eq(Dual::from(&r + &l), (EPSILON, ULP))
+    }
+
+    #[quickcheck]
     fn sum_ref_associative_property(a: Dual, b: Dual, c: Dual) -> bool {
         let c = &c;
         // XprWrapper + &Dual
@@ -272,6 +280,14 @@ mod tests_value {
     fn mul_xpr_ref_associative_property_4_args(a: Dual, b: Dual, c: Dual, d: Dual) -> bool {
         let p = a * b;
         Dual::from(&p * c * d).approx_eq(Dual::from(c * d * &p), (EPSILON, ULP))
+    }
+
+    #[quickcheck]
+    fn mul_xpr_ref_xpr_ref_associative_property(a: Dual, b: Dual, c: Dual, d: Dual) -> bool {
+        let l = a * b;
+        let r = c * d;
+        // Cover &XprWrapper && &XprWrapper
+        Dual::from(&l * &r).approx_eq(Dual::from(&r * &l), (EPSILON, ULP))
     }
 
     #[quickcheck]
