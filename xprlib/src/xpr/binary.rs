@@ -132,7 +132,28 @@ macro_rules! impl_bin_op(
                 Self::Output{xpr: $Res(BinXpr{l: self, r: other})}
             }
         }
+
+        impl<'l> $Op<Dual> for &'l Dual {
+            type Output = XprWrapper<$Res<Dual, Dual>>;
+            fn $op(self, other: Dual) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.clone(), r: other})}
+            }
+        }
         
+        impl<'r> $Op<&'r Dual> for Dual {
+            type Output = XprWrapper<$Res<Dual, Dual>>;
+            fn $op(self, other: &Dual) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self, r: other.clone()})}
+            }
+        }
+
+        impl<'l, 'r> $Op<&'r Dual> for &'l Dual {
+            type Output = XprWrapper<$Res<Dual, Dual>>;
+            fn $op(self, other: &Dual) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.clone(), r: other.clone()})}
+            }
+        }
+
         impl<R: Xpr + Copy + Clone> $Op<XprWrapper<R>> for Dual {
             type Output = XprWrapper<$Res<Dual, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
@@ -140,17 +161,79 @@ macro_rules! impl_bin_op(
             }
         }
         
-        // FIXME: R is just dual
-        impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> $Op<R> for XprWrapper<L> {
-            type Output = XprWrapper<$Res<L, R>>;
-            fn $op(self, other: R) -> Self::Output {
+        impl<'l, R: Xpr + Copy + Clone> $Op<XprWrapper<R>> for &'l Dual {
+            type Output = XprWrapper<$Res<Dual, R>>;
+            fn $op(self, other: XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.clone(), r: other.xpr})}
+            }
+        }
+
+        impl<'r, R: Xpr + Copy + Clone> $Op<&'r XprWrapper<R>> for Dual {
+            type Output = XprWrapper<$Res<Dual, R>>;
+            fn $op(self, other: &XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self, r: other.xpr})}
+            }
+        }
+
+        impl<'l, 'r, R: Xpr + Copy + Clone> $Op<&'r XprWrapper<R>> for &'l Dual {
+            type Output = XprWrapper<$Res<Dual, R>>;
+            fn $op(self, other: &XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.clone(), r: other.xpr})}
+            }
+        }
+
+        impl<L: Xpr + Copy + Clone> $Op<Dual> for XprWrapper<L> {
+            type Output = XprWrapper<$Res<L, Dual>>;
+            fn $op(self, other: Dual) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other})}
             }
         }
         
+        impl<'r, L: Xpr + Copy + Clone> $Op<&'r Dual> for XprWrapper<L> {
+            type Output = XprWrapper<$Res<L, Dual>>;
+            fn $op(self, other: &Dual) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.clone()})}
+            }
+        }
+
+        impl<'l, L: Xpr + Copy + Clone> $Op<Dual> for &'l XprWrapper<L> {
+            type Output = XprWrapper<$Res<L, Dual>>;
+            fn $op(self, other: Dual) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other})}
+            }
+        }
+
+        impl<'l, 'r, L: Xpr + Copy + Clone> $Op<&'r Dual> for &'l XprWrapper<L> {
+            type Output = XprWrapper<$Res<L, Dual>>;
+            fn $op(self, other: &Dual) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.clone()})}
+            }
+        }
+
         impl<L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> $Op<XprWrapper<R>> for XprWrapper<L> {
             type Output = XprWrapper<$Res<L, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.xpr})}
+            }
+        }
+
+        impl<'r, L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> $Op<&'r XprWrapper<R>> for XprWrapper<L> {
+            type Output = XprWrapper<$Res<L, R>>;
+            fn $op(self, other: &XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.xpr})}
+            }
+        }
+
+        impl<'l, L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> $Op<XprWrapper<R>> for &'l XprWrapper<L> {
+            type Output = XprWrapper<$Res<L, R>>;
+            fn $op(self, other: XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.xpr})}
+            }
+        }
+
+        impl<'l, 'r, L: Xpr + Copy + Clone, R: Xpr + Copy + Clone> $Op<&'r XprWrapper<R>> for &'l XprWrapper<L> {
+            type Output = XprWrapper<$Res<L, R>>;
+            fn $op(self, other: &XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.xpr})}
             }
         }
@@ -162,10 +245,52 @@ macro_rules! impl_bin_op(
             }
         }
 
+        impl<'l> $Op<f64> for &'l Dual {
+            type Output = XprWrapper<$Res<Dual, ConstantXpr>>;
+            fn $op(self, other: f64) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.clone(), r: other.into()})}
+            }
+        }
+
+        impl<'r> $Op<&'r f64> for Dual {
+            type Output = XprWrapper<$Res<Dual, ConstantXpr>>;
+            fn $op(self, other: &f64) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self, r: other.clone().into()})}
+            }
+        }
+
         impl $Op<Dual> for f64 {
             type Output = XprWrapper<$Res<ConstantXpr, Dual>>;
             fn $op(self, other: Dual) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.into(), r: other})}
+            }
+        }
+
+        impl<'r> $Op<&'r Dual> for f64 {
+            type Output = XprWrapper<$Res<ConstantXpr, Dual>>;
+            fn $op(self, other: &Dual) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.into(), r: other.clone()})}
+            }
+        }
+
+        impl<'l> $Op<Dual> for &'l f64 {
+            type Output = XprWrapper<$Res<ConstantXpr, Dual>>;
+            fn $op(self, other: Dual) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.clone().into(), r: other})}
+            }
+        }
+
+        impl<'l, 'r> $Op<&'r Dual> for &'l f64 {
+            type Output = XprWrapper<$Res<ConstantXpr, Dual>>;
+            fn $op(self, other: &Dual) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.clone().into(), r: other.clone()})}
+            }
+        }
+
+        impl<'l, 'r> $Op<&'r f64> for &'l Dual {
+            type Output = XprWrapper<$Res<Dual, ConstantXpr>>;
+            fn $op(self, other: &f64) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.clone(), r: other.clone().into()})}
             }
         }
 
@@ -176,10 +301,52 @@ macro_rules! impl_bin_op(
             }
         }
 
+        impl<'r, L: Xpr + Copy + Clone> $Op<&'r f64> for XprWrapper<L> {
+            type Output = XprWrapper<$Res<L, ConstantXpr>>;
+            fn $op(self, other: &f64) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.clone().into()})} 
+            }
+        }
+
+        impl<'l, L: Xpr + Copy + Clone> $Op<f64> for &'l XprWrapper<L> {
+            type Output = XprWrapper<$Res<L, ConstantXpr>>;
+            fn $op(self, other: f64) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.into()})} 
+            }
+        }
+
+        impl<'l, 'r, L: Xpr + Copy + Clone> $Op<&'r f64> for &'l XprWrapper<L> {
+            type Output = XprWrapper<$Res<L, ConstantXpr>>;
+            fn $op(self, other: &f64) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.clone().into()})} 
+            }
+        }
+
         impl<R: Xpr + Copy + Clone> $Op<XprWrapper<R>> for f64 {
             type Output = XprWrapper<$Res<ConstantXpr, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.into(), r: other.xpr})}
+            }
+        }
+
+        impl<'l, R: Xpr + Copy + Clone> $Op<XprWrapper<R>> for &'l f64 {
+            type Output = XprWrapper<$Res<ConstantXpr, R>>;
+            fn $op(self, other: XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.clone().into(), r: other.xpr})}
+            }
+        }
+
+        impl<'r, R: Xpr + Copy + Clone> $Op<&'r XprWrapper<R>> for f64 {
+            type Output = XprWrapper<$Res<ConstantXpr, R>>;
+            fn $op(self, other: &XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.into(), r: other.xpr})}
+            }
+        }
+
+        impl<'l, 'r, R: Xpr + Copy + Clone> $Op<&'r XprWrapper<R>> for &'l f64 {
+            type Output = XprWrapper<$Res<ConstantXpr, R>>;
+            fn $op(self, other: &XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.clone().into(), r: other.xpr})}
             }
         }
     }
