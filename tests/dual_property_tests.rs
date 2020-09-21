@@ -53,6 +53,12 @@ mod tests_value {
     }
 
     #[quickcheck]
+    fn sum_f64_dual_ref_property(x: Dual, y: f64) -> bool {
+        let x = &x;
+        Dual::from(x + y).approx_eq(Dual::from(y + x), F64Margin::default())
+    }
+
+    #[quickcheck]
     fn sum_ref_property(x: Dual, y: Dual) -> bool {
         let x = &x;
         Dual::from(x + y).approx_eq(Dual::from(y + x), F64Margin::default())
@@ -78,6 +84,12 @@ mod tests_value {
     #[quickcheck]
     fn sub_f64_ref_property(x: Dual, y: f64) -> bool {
         let y = &y;
+        Dual::from(x - y).approx_eq(Dual::from(-(y - x)), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn sub_f64_dual_ref_property(x: Dual, y: f64) -> bool {
+        let x = &x;
         Dual::from(x - y).approx_eq(Dual::from(-(y - x)), F64Margin::default())
     }
 
@@ -128,6 +140,12 @@ mod tests_value {
     }
 
     #[quickcheck]
+    fn mul_f64_dual_ref_property(x: Dual, y: f64) -> bool {
+        let x = &x;
+        Dual::from(x * y).approx_eq(Dual::from(y * x), F64Margin::default())
+    }
+
+    #[quickcheck]
     fn mul_ref_property(x: Dual, y: Dual) -> bool {
         let x = &x;
         Dual::from(x * y).approx_eq(Dual::from(y * x), F64Margin::default())
@@ -152,6 +170,12 @@ mod tests_value {
 
     #[quickcheck]
     fn div_f64_ref_property(x: Dual, y: f64) -> bool {
+        let y = &y;
+        Dual::from((x / y) * (y / x)).approx_eq(Dual::from(1.0), (EPSILON, ULP))
+    }
+
+    #[quickcheck]
+    fn div_f64_dual_ref_property(x: Dual, y: f64) -> bool {
         let y = &y;
         Dual::from((x / y) * (y / x)).approx_eq(Dual::from(1.0), (EPSILON, ULP))
     }
