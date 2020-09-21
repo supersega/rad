@@ -175,6 +175,13 @@ macro_rules! impl_bin_op(
             }
         }
 
+        impl<'l, 'r, R: Xpr + Copy + Clone> $Op<&'r XprWrapper<R>> for &'l Dual {
+            type Output = XprWrapper<$Res<Dual, R>>;
+            fn $op(self, other: &XprWrapper<R>) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.clone(), r: other.xpr})}
+            }
+        }
+
         impl<L: Xpr + Copy + Clone> $Op<Dual> for XprWrapper<L> {
             type Output = XprWrapper<$Res<L, Dual>>;
             fn $op(self, other: Dual) -> Self::Output {
@@ -193,6 +200,13 @@ macro_rules! impl_bin_op(
             type Output = XprWrapper<$Res<L, Dual>>;
             fn $op(self, other: Dual) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other})}
+            }
+        }
+
+        impl<'l, 'r, L: Xpr + Copy + Clone> $Op<&'r Dual> for &'l XprWrapper<L> {
+            type Output = XprWrapper<$Res<L, Dual>>;
+            fn $op(self, other: &Dual) -> Self::Output {
+                Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.clone()})}
             }
         }
 
