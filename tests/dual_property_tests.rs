@@ -48,6 +48,17 @@ mod tests_value {
     }
 
     #[quickcheck]
+    fn sub_property(x: Dual, y: Dual) -> bool {
+        Dual::from(x - y).approx_eq(Dual::from(-(y - x)), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn sub_ref_property(x: Dual, y: Dual) -> bool {
+        let x = &x;
+        Dual::from(x - y).approx_eq(Dual::from(-(y - x)), F64Margin::default())
+    }
+
+    #[quickcheck]
     fn sum_associative_property(a: Dual, b: Dual, c: Dual) -> bool {
         Dual::from(a + b + c).approx_eq(Dual::from(b + c + a), (EPSILON, ULP))
     }
@@ -66,6 +77,17 @@ mod tests_value {
     fn mul_ref_property(x: Dual, y: Dual) -> bool {
         let x = &x;
         Dual::from(x * y).approx_eq(Dual::from(y * x), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn div_property(x: Dual, y: Dual) -> bool {
+        Dual::from((x / y) * (y / x)).approx_eq(Dual::from(1.0), (EPSILON, ULP))
+    }
+
+    #[quickcheck]
+    fn div_ref_property(x: Dual, y: Dual) -> bool {
+        let x = &x;
+        Dual::from((x / y) * (y / x)).approx_eq(Dual::from(1.0), (EPSILON, ULP))
     }
 
     #[quickcheck]
