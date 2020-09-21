@@ -1,21 +1,6 @@
 use rad::{Dual, Xpr, gradient, derivative};
 
 #[test]
-fn test_val_dual_xpr() {
-    let dual_num = Dual::from(1.0);
-    assert_eq!(dual_num.val(), 1.0);
-}
-
-#[test]
-fn test_value_from_neg_expressions() {
-    let a = Dual::from(1.0);
-    let b = Dual::from(2.0);
-    let c = Dual::from(a - b);
-    let d = Dual::from(-(b - a));
-
-    assert_eq!(c.val(), d.val());
-}
-#[test]
 fn test_sin_xpr(){
     let a = Dual::from(1.0); 
     let sina1 = a.sin();

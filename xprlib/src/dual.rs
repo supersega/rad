@@ -1,7 +1,7 @@
 /// Use this CopyCell to allow eval gradient for immutable duals.
 use toolshed::CopyCell;
 /// To be able apply property tests
-#[cfg(feature = "quickcheck")]
+#[cfg(feature = "test-utils")]
 extern crate quickcheck;
 
 /// Dual number representation.
@@ -52,10 +52,23 @@ impl From<f64> for Dual {
     }
 }
 
-
-#[cfg(feature = "quickcheck")]
+/// Implement Arbitrary trait for Dual to use it in property tests.
+#[cfg(feature = "test-utils")]
 impl quickcheck::Arbitrary for Dual {
+    /// Just create Dual num from f64
     fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> Dual {
         f64::arbitrary(g).into()
+    }
+}
+
+/// Implement ApproxEq trait for Dual to use it in property tests
+#[cfg(feature = "test-utils")]
+impl float_cmp::ApproxEq for Dual {
+    /// Use 'Margin' from f64
+    type Margin = float_cmp::F64Margin;
+    /// Check Dual numbers for approximate equal. Compare value and derivative.
+    fn approx_eq<M: Into<Self::Margin>>(self, other: Self, margin: M) -> bool {
+        let margin = margin.into();
+        self.val.approx_eq(other.val, margin) && self.der.get().approx_eq(other.der.get(), margin)
     }
 }
