@@ -1,6 +1,6 @@
 # RAD - Rust Automatic Differentiation Library
 
-[![Build Status](https://travis-ci.org/github/supersega/rad.svg?branch=master)](https://travis-ci.org/github/supersega/rad)
+[![Build Status](https://travis-ci.org/supersega/rad.svg?branch=master)](https://travis-ci.org/github/supersega/rad)
 [![codecov](https://codecov.io/gh/supersega/rad/branch/master/graph/badge.svg)](https://codecov.io/gh/supersega/rad)
 
 ## Scalar function derivative evaluation
