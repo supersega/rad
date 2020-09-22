@@ -7,12 +7,12 @@ pub trait Xpr {
 /// Wrap any expression into this 'holder'. This is
 /// a workaround for generic operator overloading.
 #[derive(Copy, Clone, Debug)]
-pub struct XprWrapper<T: Xpr> {
+pub struct XprWrapper<T: Xpr + Copy + Clone> {
     pub xpr: T
 }
 
 impl<T> XprWrapper<T> where 
-T: Xpr {
+T: Xpr + Copy + Clone {
     /// Value of expression wrapper function.
     pub fn value(&self) -> f64 {
         self.xpr.value()

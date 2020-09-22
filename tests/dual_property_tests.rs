@@ -402,3 +402,27 @@ mod tests_derivative {
         derivative!(|x: Dual| -> Dual { (f1(x) * f2(x)).into() }(x), x).approx_eq(derivative!(f1(x), x) * f2(x).val() + derivative!(f2(x), x) * f1(x).val(), F64Margin::default())
     }
 }
+
+#[cfg(test)]
+mod compare_tests {
+    use super::*;
+
+    #[quickcheck]
+    fn dual_values_are_eq(f: f64) -> bool {
+        let x: Dual = f.into();
+        let y: Dual = f.into();
+        x == y
+    }
+
+    #[quickcheck]
+    fn dual_value_is_eq_to_xpr(f: f64) -> bool {
+        let x: Dual = f.into();
+        let y: Dual = f.into();
+        Dual::from(y + x) == x + y
+    }
+
+    #[quickcheck]
+    fn xpr_is_eq_to_dual_value(x: Dual, y: Dual) -> bool {
+        y + x == Dual::from(x + y)
+    }
+}
