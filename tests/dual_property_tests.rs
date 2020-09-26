@@ -425,4 +425,9 @@ mod compare_tests {
     fn xpr_is_eq_to_dual_value(x: Dual, y: Dual) -> bool {
         y + x == Dual::from(x + y)
     }
+
+    #[quickcheck]
+    fn xpr_is_eq_to_xpr(x: Dual, y: Dual) -> bool {
+        x * y == x * y
+    }
 }

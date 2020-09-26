@@ -14,3 +14,9 @@ impl<T: Xpr + Assign + Copy + Clone> PartialEq<Dual> for XprWrapper<T> {
         Dual::from(*self) == *other
     }
 }
+
+impl<L: Xpr + Assign + Copy + Clone, R: Xpr + Assign + Copy + Clone> PartialEq<XprWrapper<R>> for XprWrapper<L> {
+    fn eq(&self, other: &XprWrapper<R>) -> bool {
+        Dual::from(*self) == *other
+    }
+}
