@@ -3,6 +3,12 @@ use crate::xpr::assign::Assign;
 use crate::dual::Dual;
 use crate::xpr::expression::{XprWrapper, Xpr};
 
+impl PartialEq for Dual {
+    fn eq(&self, other: &Dual) -> bool {
+        self.val == other.val
+    }
+}
+
 impl<T: Xpr + Assign + Copy + Clone> PartialEq<XprWrapper<T>> for Dual {
     fn eq(&self, other: &XprWrapper<T>) -> bool {
         *self == Dual::from(*other)

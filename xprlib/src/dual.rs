@@ -5,7 +5,7 @@ use toolshed::CopyCell;
 extern crate quickcheck;
 
 /// Dual number representation.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug)]
 pub struct Dual {
     /// Value of Dual number.
     pub(crate) val: f64,

@@ -430,4 +430,13 @@ mod compare_tests {
     fn xpr_is_eq_to_xpr(x: Dual, y: Dual) -> bool {
         x * y == x * y
     }
+
+    #[quickcheck]
+    fn dauls_are_eq_even_when_ders_are_not_same(val: f64) -> bool {
+        let x: Dual = val.into();
+        let y = x;
+        // we can do it here, but it is workaround
+        y.seed();
+        x == y
+    }
 }
