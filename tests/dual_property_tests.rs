@@ -364,6 +364,22 @@ mod tests_value {
     fn inverse_number_property(x: Dual) -> bool {
         Dual::from((1.0 / x) * x).approx_eq(1.0.into(), F64Margin::default())
     }
+
+    #[quickcheck]
+    fn ordering_sum(a: Dual, b: Dual, c: Dual) -> bool {
+        (a + c >= b + c) == (a >= b)
+    }
+
+    #[quickcheck]
+    fn ordering_mul(a: Dual, b: Dual, c: Dual) -> bool {
+        let c = c * c + 1.0;
+        (a * c >= b * c) == (a >= b)
+    }
+
+    #[quickcheck]
+    fn ordering_trans(a: Dual, b: Dual, c: Dual) -> bool {
+        (a < b && b < c) == (a < b && a < c && b < c)
+    }
 }
 
 #[cfg(test)]
@@ -400,5 +416,43 @@ mod tests_derivative {
         let f1 = |x: Dual| -> Dual { (x + x).into() };
         let f2 = |x: Dual| -> Dual { (x * x).into() };
         derivative!(|x: Dual| -> Dual { (f1(x) * f2(x)).into() }(x), x).approx_eq(derivative!(f1(x), x) * f2(x).val() + derivative!(f2(x), x) * f1(x).val(), F64Margin::default())
+    }
+}
+
+#[cfg(test)]
+mod compare_tests {
+    use super::*;
+
+    #[quickcheck]
+    fn dual_values_are_eq(f: f64) -> bool {
+        let x: Dual = f.into();
+        let y: Dual = f.into();
+        x == y
+    }
+
+    #[quickcheck]
+    fn dual_value_is_eq_to_xpr(f: f64) -> bool {
+        let x: Dual = f.into();
+        let y: Dual = f.into();
+        Dual::from(y + x) == x + y
+    }
+
+    #[quickcheck]
+    fn xpr_is_eq_to_dual_value(x: Dual, y: Dual) -> bool {
+        y + x == Dual::from(x + y)
+    }
+
+    #[quickcheck]
+    fn xpr_is_eq_to_xpr(x: Dual, y: Dual) -> bool {
+        x * y == x * y
+    }
+
+    #[quickcheck]
+    fn dauls_are_eq_even_when_ders_are_not_same(val: f64) -> bool {
+        let x: Dual = val.into();
+        let y = x;
+        // we can do it here, but it is workaround
+        y.seed();
+        x == y
     }
 }
