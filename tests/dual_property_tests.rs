@@ -364,6 +364,22 @@ mod tests_value {
     fn inverse_number_property(x: Dual) -> bool {
         Dual::from((1.0 / x) * x).approx_eq(1.0.into(), F64Margin::default())
     }
+
+    #[quickcheck]
+    fn ordering_sum(a: Dual, b: Dual, c: Dual) -> bool {
+        (a + c >= b + c) == (a >= b)
+    }
+
+    #[quickcheck]
+    fn ordering_mul(a: Dual, b: Dual, c: Dual) -> bool {
+        let c = c * c + 1.0;
+        (a * c >= b * c) == (a >= b)
+    }
+
+    #[quickcheck]
+    fn ordering_trans(a: Dual, b: Dual, c: Dual) -> bool {
+        (a < b && b < c) == (a < b && a < c && b < c)
+    }
 }
 
 #[cfg(test)]
