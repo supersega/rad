@@ -5,19 +5,19 @@ use crate::xpr::expression::{XprWrapper, Xpr};
 
 impl PartialEq for Dual {
     fn eq(&self, other: &Dual) -> bool {
-        self.val == other.val
+        self.val.eq(&other.val)
     }
 }
 
 impl<T: Xpr + Assign + Copy + Clone> PartialEq<XprWrapper<T>> for Dual {
     fn eq(&self, other: &XprWrapper<T>) -> bool {
-        *self == Dual::from(*other)
+        self.eq(&Dual::from(*other))
     }
 }
 
 impl<T: Xpr + Assign + Copy + Clone> PartialEq<Dual> for XprWrapper<T> {
     fn eq(&self, other: &Dual) -> bool {
-        Dual::from(*self) == *other
+        Dual::from(*self).eq(other)
     }
 }
 
@@ -26,7 +26,7 @@ where L: Xpr + Assign + Copy + Clone,
       R: Xpr + Assign + Copy + Clone
 {
     fn eq(&self, other: &XprWrapper<R>) -> bool {
-        Dual::from(*self) == *other
+        self.eq(&Dual::from(*other))
     }
 }
 
