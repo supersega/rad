@@ -1,25 +1,20 @@
 use std::ops::Neg;
-use super::{assign::Assign, expression::{Xpr, XprWrapper}};
+use super::{assign::Assign, expression::XprWrapper};
 use crate::dual::Dual;
 
 /// Unary expression holder.
 #[derive(Copy, Clone, Debug)]
-pub struct UnXpr<Op> where Op: Xpr + Copy + Clone {
+pub struct UnXpr<Op> where Op: Copy + Clone {
     /// operand of current expression.
     op : Op,
 }
 
 /// Negate expression
 #[derive(Copy, Clone, Debug)]
-pub struct NegXpr<Op: Xpr + Copy + Clone>(UnXpr<Op>);
-
-impl<Op> Xpr for NegXpr<Op> where 
-    Op: Xpr + Copy + Clone {
-    fn value(&self) -> f64 { - self.0.op.value() }
-}
+pub struct NegXpr<Op: Copy + Clone>(UnXpr<Op>);
 
 impl<E> Assign for NegXpr<E> where 
-    E: Xpr + Copy + Clone + Assign {
+    E: Copy + Clone + Assign {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
         other.neagate();
@@ -53,7 +48,7 @@ macro_rules! impl_un_op(
             }
         }
         
-        impl<E: Xpr + Copy + Clone> $Op for XprWrapper<E> {
+        impl<E: Copy + Clone> $Op for XprWrapper<E> {
             type Output = XprWrapper<$Res<E>>;
             fn $op(self) -> Self::Output {
                 Self::Output{xpr: $Res(UnXpr{ op: self.xpr })}
@@ -66,15 +61,10 @@ impl_un_op!(Neg, neg, NegXpr);
 
 /// Sinus expression
 #[derive(Copy, Clone, Debug)]
-pub struct SinXpr<Op: Xpr + Copy + Clone>(UnXpr<Op>);
-
-impl<Op> Xpr for SinXpr<Op> where 
-    Op: Xpr + Copy + Clone {
-    fn value(&self) -> f64 { self.0.op.value().sin() }
-}
+pub struct SinXpr<Op: Copy + Clone>(UnXpr<Op>);
 
 impl<E> Assign for SinXpr<E> where 
-    E: Xpr + Copy + Clone + Assign {
+    E: Copy + Clone + Assign {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
         other.val = other.val.sin();
@@ -84,15 +74,10 @@ impl<E> Assign for SinXpr<E> where
 
 /// Cosinus expression
 #[derive(Copy, Clone, Debug)]
-pub struct CosXpr<Op: Xpr + Copy + Clone>(UnXpr<Op>);
-
-impl<Op> Xpr for CosXpr<Op> where 
-    Op: Xpr + Copy + Clone {
-    fn value(&self) -> f64 { self.0.op.value().cos() }
-}
+pub struct CosXpr<Op: Copy + Clone>(UnXpr<Op>);
 
 impl<E> Assign for CosXpr<E> where 
-    E: Xpr + Copy + Clone + Assign {
+    E: Copy + Clone + Assign {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
         other.val = other.val.cos();
@@ -119,7 +104,7 @@ macro_rules! un_op_xpr(
     };
 );
 
-impl<E: Xpr + Copy + Clone> XprWrapper<E> {
+impl<E: Copy + Clone> XprWrapper<E> {
     un_op_xpr!(sin, SinXpr, E);
     un_op_xpr!(cos, CosXpr, E);
 }

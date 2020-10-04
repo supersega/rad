@@ -5,5 +5,3 @@ mod assignop;
 mod constant;
 mod binary;
 mod unary;
-
-pub use expression::Xpr;

@@ -1,15 +1,15 @@
-use rad::{Dual, Xpr, gradient, derivative};
+use rad::{Dual, gradient, derivative};
 
 #[test]
 fn test_sin_xpr(){
     let a = Dual::from(1.0); 
     let sina1 = a.sin();
     let sina2 = Dual::sin(a);
-    assert_eq!(sina1.value(), sina2.value());
+    assert_eq!(sina1, sina2);
     let b = Dual::from(2.0);
     let sinab1 = (a + b).sin();
     let sinab2 = rad::expression::XprWrapper::sin(a + b);
-    assert_eq!(sinab1.value(), sinab2.value());
+    assert_eq!(sinab1, sinab2);
 }
 
 #[test]
@@ -25,7 +25,7 @@ fn test_add() {
     assert_eq!(g.val(), h.val());
     let g = e + f;
     let h = f + e;
-    assert_eq!(g.value(), h.value());
+    assert_eq!(g, h);
 }
 
 #[test]
@@ -33,7 +33,7 @@ fn test_add_dual_and_f64() {
     let a = Dual::from(1.0);
     let b = a + 5.0;
     let c = 5.0 + a;
-    assert_eq!(b.xpr.value(), c.xpr.value());
+    assert_eq!(b, c);
 }
 
 #[test]
@@ -54,8 +54,8 @@ fn test_sub() {
     let h = f - e;
     let j = a - b - d + c;
     let k = d - c - a + b;
-    assert_eq!(j.value(), -k.value());
-    assert_eq!(g.value(), -h.value());
+    assert_eq!(j, -k);
+    assert_eq!(g, -h);
 }
 
 #[test]

@@ -1,13 +1,8 @@
-use super::{assign::Assign, expression::{Xpr, XprWrapper}};
+use super::{assign::Assign, expression::XprWrapper};
 use crate::dual::Dual;
 
-impl Xpr for Dual {
-    fn value(&self) -> f64 {
-        self.val
-    }
-}
-
-/// Assign Dual to Dual (easy, easy)
+/// Assign Dual to Dual.
+/// Just simple implementation for Dual number.
 impl Assign for Dual {
     fn assign(&self, other: &mut Dual) {
         other.val = self.val;
@@ -35,7 +30,7 @@ impl Assign for Dual {
     }
 }
 
-impl<T: Xpr + Assign + Copy + Clone> From<XprWrapper<T>> for Dual {
+impl<T: Assign + Copy + Clone> From<XprWrapper<T>> for Dual {
     fn from(wxpr: XprWrapper<T>) -> Self {
         let mut val = Dual::new(0.0);
         wxpr.xpr.assign(&mut val);

@@ -1,4 +1,4 @@
-use super::{assign::Assign, expression::{Xpr}};
+use super::{assign::Assign};
 use crate::dual::Dual;
 
 /// Struct to hold constant expression left and right parts
@@ -10,13 +10,6 @@ pub struct ConstantXpr {
 /// Constant expression from f64
 impl From<f64> for ConstantXpr {
     fn from(val: f64) -> Self {Self { val } }
-}
-
-/// Implementation for Xpr for Constant
-impl Xpr for ConstantXpr {
-    fn value(&self) -> f64 {
-        self.val
-    }
 }
 
 /// Assign Dual to Dual (easy, easy)
