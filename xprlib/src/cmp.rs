@@ -1,7 +1,7 @@
 use std::cmp::{PartialEq, Ordering};
 use crate::xpr::assign::Assign;
 use crate::dual::Dual;
-use crate::xpr::expression::XprWrapper;
+use crate::xpr::wrapper::XprWrapper;
 
 impl PartialEq for Dual {
     fn eq(&self, other: &Dual) -> bool {

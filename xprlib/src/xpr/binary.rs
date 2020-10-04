@@ -1,5 +1,5 @@
 use std::ops::{Add, Sub, Mul, Div};
-use super::{assign::Assign, constant::ConstantXpr, expression::XprWrapper};
+use super::{assign::Assign, constant::ConstantXpr, wrapper::XprWrapper};
 use crate::dual::Dual;
 
 /// Structure which represents binary expression

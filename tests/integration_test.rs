@@ -8,7 +8,7 @@ fn test_sin_xpr(){
     assert_eq!(sina1, sina2);
     let b = Dual::from(2.0);
     let sinab1 = (a + b).sin();
-    let sinab2 = rad::expression::XprWrapper::sin(a + b);
+    let sinab2 = (b + a).sin();
     assert_eq!(sinab1, sinab2);
 }
 

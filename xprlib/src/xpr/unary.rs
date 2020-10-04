@@ -1,5 +1,5 @@
 use std::ops::Neg;
-use super::{assign::Assign, expression::XprWrapper};
+use super::{assign::Assign, wrapper::XprWrapper};
 use crate::dual::Dual;
 
 /// Unary expression holder.
