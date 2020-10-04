@@ -1,7 +1,8 @@
-# RAD - Rust Automatic Differentiation Library
-
 [![Build Status](https://travis-ci.org/supersega/rad.svg?branch=master)](https://travis-ci.org/github/supersega/rad)
 [![codecov](https://codecov.io/gh/supersega/rad/branch/master/graph/badge.svg)](https://codecov.io/gh/supersega/rad)
+
+# RAD - Rust Automatic Differentiation Library
+This library is inspired by C++ library [autodiff](https://github.com/autodiff/autodiff) crated by [Allan Leal](https://github.com/allanleal).
 
 ## Scalar function derivative evaluation
 This example shows how to compute derivative of simple function.
