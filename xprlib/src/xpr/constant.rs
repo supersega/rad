@@ -1,18 +1,14 @@
-use super::{assign::Assign};
+use super::assign::Assign;
 use crate::dual::Dual;
 
-/// Struct to hold constant expression left and right parts
+/// Struct to hold constant expression.
 #[derive(Copy, Clone, Debug)]
 pub struct ConstantXpr {
+    /// 'val' - value of constant expression.
     val: f64,
 }
 
-/// Constant expression from f64
-impl From<f64> for ConstantXpr {
-    fn from(val: f64) -> Self {Self { val } }
-}
-
-/// Assign Dual to Dual (easy, easy)
+/// Assign constant expression.
 impl Assign for ConstantXpr {
     fn assign(&self, other: &mut Dual) {
         other.val = self.val;
@@ -30,3 +26,6 @@ impl Assign for ConstantXpr {
         target.val *= self.val;
     }
 }
+
+/// Create constant expression.
+pub(crate) fn constant(val: f64) -> ConstantXpr {ConstantXpr { val }}
