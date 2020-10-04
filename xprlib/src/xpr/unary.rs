@@ -99,6 +99,7 @@ impl<E> Assign for CosXpr<E> where
         other.der.set( - other.der.get() * other.val.sin());
     }
 }
+
 macro_rules! un_op_dual(
     ($op: ident, $Res: ident) => {
         /// $op operation
@@ -108,6 +109,7 @@ macro_rules! un_op_dual(
 
 impl Dual {
     un_op_dual!(sin, SinXpr);
+    un_op_dual!(cos, CosXpr);
 }
 
 macro_rules! un_op_xpr(
@@ -119,4 +121,5 @@ macro_rules! un_op_xpr(
 
 impl<E: Xpr + Copy + Clone> XprWrapper<E> {
     un_op_xpr!(sin, SinXpr, E);
+    un_op_xpr!(cos, CosXpr, E);
 }
