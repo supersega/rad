@@ -2,5 +2,5 @@
 /// a workaround for generic operator overloading.
 #[derive(Copy, Clone, Debug)]
 pub struct XprWrapper<T: Copy + Clone> {
-    pub xpr: T
+    pub(crate) xpr: T
 }
