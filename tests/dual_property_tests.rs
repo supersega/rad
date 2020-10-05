@@ -421,6 +421,18 @@ mod test_math_functions {
         let sqrt_sum = |x: Dual, y: Dual| -> Dual { (x + y).sqrt().into() };
         derivative!(sqrt_sum(x, y), x).approx_eq(1.0 / (2.0 * (x.val() + y.val()).sqrt()), F64Margin::default())
     }
+
+    #[quickcheck]
+    fn ln_test(x: Dual) -> bool {
+        let nn_ln = |x: Dual| -> Dual { Dual::from(x * x + 1.0).ln().into() };
+        derivative!(nn_ln(x), x).approx_eq(2.0 * x.val() / (x.val() * x.val() + 1.0), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn ln_sum_test(x: Dual) -> bool {
+        let nn_ln = |x: Dual| -> Dual { (x * x + 1.0).ln().into() };
+        derivative!(nn_ln(x), x).approx_eq(2.0 * x.val() / (x.val() * x.val() + 1.0), F64Margin::default())
+    }
 }
 
 #[cfg(test)]
