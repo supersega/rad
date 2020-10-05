@@ -393,15 +393,33 @@ mod test_math_functions {
     }
 
     #[quickcheck]
+    fn sin_sum_test(x: Dual, y: Dual) -> bool {
+        let sin_sum = |x: Dual, y: Dual| -> Dual { (x + y).sin().into() };
+        derivative!(sin_sum(x, y), x).approx_eq(Dual::from(y + x).val().cos(), F64Margin::default())
+    }
+
+    #[quickcheck]
     fn cos_test(x: Dual) -> bool {
         let cos = |x: Dual| -> Dual { x.cos().into() };
         derivative!(cos(x), x).approx_eq(-x.val().sin(), F64Margin::default())
     }
 
     #[quickcheck]
+    fn cos_sum_test(x: Dual, y: Dual) -> bool {
+        let cos_sum = |x: Dual, y: Dual| -> Dual { (x + y).cos().into() };
+        derivative!(cos_sum(x, y), x).approx_eq(-Dual::from(y + x).val().sin(), F64Margin::default())
+    }
+
+    #[quickcheck]
     fn sqrt_test(x: Dual) -> bool {
         let sqrt = |x: Dual| -> Dual { x.sqrt().into() };
         derivative!(sqrt(x), x).approx_eq(1.0 / (2.0 * x.val().sqrt()), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn sqrt_sum_test(x: Dual, y: Dual) -> bool {
+        let sqrt_sum = |x: Dual, y: Dual| -> Dual { (x + y).sqrt().into() };
+        derivative!(sqrt_sum(x, y), x).approx_eq(1.0 / (2.0 * (x.val() + y.val()).sqrt()), F64Margin::default())
     }
 }
 
