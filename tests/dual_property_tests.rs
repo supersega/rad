@@ -397,6 +397,12 @@ mod test_math_functions {
         let cos = |x: Dual| -> Dual { x.cos().into() };
         derivative!(cos(x), x).approx_eq(-x.val().sin(), F64Margin::default())
     }
+
+    #[quickcheck]
+    fn sqrt_test(x: Dual) -> bool {
+        let sqrt = |x: Dual| -> Dual { x.sqrt().into() };
+        derivative!(sqrt(x), x).approx_eq(1.0 / (2.0 * x.val().sqrt()), F64Margin::default())
+    }
 }
 
 #[cfg(test)]

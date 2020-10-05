@@ -109,6 +109,7 @@ macro_rules! un_op_dual(
 impl Dual {
     un_op_dual!(sin, SinXpr);
     un_op_dual!(cos, CosXpr);
+    un_op_dual!(sqrt, SqrtXpr);
 }
 
 macro_rules! un_op_xpr(
