@@ -3,7 +3,7 @@ use crate::dual::Dual;
 /// Trait to assign expression to Dual number. By 
 /// default assign_add, assign_sub create temporary
 /// variables, for some cases we can optimize that.
-pub trait Assign {
+pub trait Assign: Copy + Clone {
     /// Assign expression to Dual number.
     /// 
     /// # Arguments 

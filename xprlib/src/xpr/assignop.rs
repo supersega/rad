@@ -9,7 +9,7 @@ macro_rules! impl_assign_op(
             fn $op(&mut self, other: Dual) { other.$fun(self); }
         }
         /// $Op operation XprWrapper to Dual number.
-        impl<E: Assign + Copy + Clone> $Op<XprWrapper<E>> for Dual {
+        impl<E: Assign> $Op<XprWrapper<E>> for Dual {
             fn $op(&mut self, other: XprWrapper<E>) { other.xpr.$fun(self); }
         }
     }

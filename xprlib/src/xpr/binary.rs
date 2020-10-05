@@ -5,7 +5,7 @@ use crate::dual::Dual;
 /// Structure which represents binary expression
 #[derive(Copy, Clone, Debug)]
 pub struct BinXpr<L, R>
-where  L: Assign + Copy + Clone, R: Assign + Copy + Clone {
+where  L: Assign, R: Assign {
     /// 'l' - the left part of expression.
     l: L,
     /// 'r' - the right part of expression.
@@ -14,10 +14,10 @@ where  L: Assign + Copy + Clone, R: Assign + Copy + Clone {
 
 /// Add expression structure which holds binary expression.
 #[derive(Copy, Clone, Debug)]
-pub struct AddXpr<L: Assign + Copy + Clone, R: Assign + Copy + Clone>(BinXpr<L, R>);
+pub struct AddXpr<L: Assign, R: Assign>(BinXpr<L, R>);
 
 /// Implement Assign trait for AddXpr
-impl<L: Assign + Copy + Clone, R: Assign + Copy + Clone> Assign for AddXpr<L, R> {
+impl<L: Assign, R: Assign> Assign for AddXpr<L, R> {
     fn assign(&self, target: &mut Dual) {
         self.0.l.assign(target);
         self.0.r.assign_add(target);
@@ -43,10 +43,10 @@ impl<L: Assign + Copy + Clone, R: Assign + Copy + Clone> Assign for AddXpr<L, R>
 
 /// Sub expression structure which holds binary expression.
 #[derive(Copy, Clone, Debug)]
-pub struct SubXpr<L: Assign + Copy + Clone, R: Assign + Copy + Clone>(BinXpr<L, R>);
+pub struct SubXpr<L: Assign, R: Assign>(BinXpr<L, R>);
 
 /// Implement Assign trait for SubXpr
-impl<L: Assign + Copy + Clone + Assign, R: Assign + Copy + Clone + Assign> Assign for SubXpr<L, R> {
+impl<L: Assign, R: Assign> Assign for SubXpr<L, R> {
     fn assign(&self, target: &mut Dual) {
         self.0.l.assign(target);
         self.0.r.assign_sub(target);
@@ -72,10 +72,10 @@ impl<L: Assign + Copy + Clone + Assign, R: Assign + Copy + Clone + Assign> Assig
 
 /// Mul expression structure which holds binary expression.
 #[derive(Copy, Clone, Debug)]
-pub struct MulXpr<L: Assign + Copy + Clone, R: Assign + Copy + Clone>(BinXpr<L, R>);
+pub struct MulXpr<L: Assign, R: Assign>(BinXpr<L, R>);
 
 /// Implement Assign trait for MulXpr
-impl<L: Assign + Copy + Clone + Assign, R: Assign + Copy + Clone + Assign> Assign for MulXpr<L, R> {
+impl<L: Assign, R: Assign> Assign for MulXpr<L, R> {
     fn assign(&self, target: &mut Dual) {
         self.0.l.assign(target);
         self.0.r.assign_mul(target);
@@ -89,10 +89,10 @@ impl<L: Assign + Copy + Clone + Assign, R: Assign + Copy + Clone + Assign> Assig
 
 /// Div expression structure which holds binary expression.
 #[derive(Copy, Clone, Debug)]
-pub struct DivXpr<L: Assign + Copy + Clone, R: Assign + Copy + Clone>(BinXpr<L, R>);
+pub struct DivXpr<L: Assign, R: Assign>(BinXpr<L, R>);
 
 /// Implement Assign trait for DivXpr
-impl<L: Assign + Copy + Clone + Assign, R: Assign + Copy + Clone + Assign> Assign for DivXpr<L, R> {
+impl<L: Assign, R: Assign> Assign for DivXpr<L, R> {
     fn assign(&self, target: &mut Dual) {
         self.0.l.assign(target);
         self.0.r.assign_div(target);
@@ -134,84 +134,84 @@ macro_rules! impl_bin_op(
             }
         }
 
-        impl<R: Assign + Copy + Clone> $Op<XprWrapper<R>> for Dual {
+        impl<R: Assign> $Op<XprWrapper<R>> for Dual {
             type Output = XprWrapper<$Res<Dual, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self, r: other.xpr})}
             }
         }
         
-        impl<'l, R: Assign + Copy + Clone> $Op<XprWrapper<R>> for &'l Dual {
+        impl<'l, R: Assign> $Op<XprWrapper<R>> for &'l Dual {
             type Output = XprWrapper<$Res<Dual, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.clone(), r: other.xpr})}
             }
         }
 
-        impl<'r, R: Assign + Copy + Clone> $Op<&'r XprWrapper<R>> for Dual {
+        impl<'r, R: Assign> $Op<&'r XprWrapper<R>> for Dual {
             type Output = XprWrapper<$Res<Dual, R>>;
             fn $op(self, other: &XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self, r: other.xpr})}
             }
         }
 
-        impl<'l, 'r, R: Assign + Copy + Clone> $Op<&'r XprWrapper<R>> for &'l Dual {
+        impl<'l, 'r, R: Assign> $Op<&'r XprWrapper<R>> for &'l Dual {
             type Output = XprWrapper<$Res<Dual, R>>;
             fn $op(self, other: &XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.clone(), r: other.xpr})}
             }
         }
 
-        impl<L: Assign + Copy + Clone> $Op<Dual> for XprWrapper<L> {
+        impl<L: Assign> $Op<Dual> for XprWrapper<L> {
             type Output = XprWrapper<$Res<L, Dual>>;
             fn $op(self, other: Dual) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other})}
             }
         }
         
-        impl<'r, L: Assign + Copy + Clone> $Op<&'r Dual> for XprWrapper<L> {
+        impl<'r, L: Assign> $Op<&'r Dual> for XprWrapper<L> {
             type Output = XprWrapper<$Res<L, Dual>>;
             fn $op(self, other: &Dual) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.clone()})}
             }
         }
 
-        impl<'l, L: Assign + Copy + Clone> $Op<Dual> for &'l XprWrapper<L> {
+        impl<'l, L: Assign> $Op<Dual> for &'l XprWrapper<L> {
             type Output = XprWrapper<$Res<L, Dual>>;
             fn $op(self, other: Dual) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other})}
             }
         }
 
-        impl<'l, 'r, L: Assign + Copy + Clone> $Op<&'r Dual> for &'l XprWrapper<L> {
+        impl<'l, 'r, L: Assign> $Op<&'r Dual> for &'l XprWrapper<L> {
             type Output = XprWrapper<$Res<L, Dual>>;
             fn $op(self, other: &Dual) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.clone()})}
             }
         }
 
-        impl<L: Assign + Copy + Clone, R: Assign + Copy + Clone> $Op<XprWrapper<R>> for XprWrapper<L> {
+        impl<L: Assign, R: Assign> $Op<XprWrapper<R>> for XprWrapper<L> {
             type Output = XprWrapper<$Res<L, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.xpr})}
             }
         }
 
-        impl<'r, L: Assign + Copy + Clone, R: Assign + Copy + Clone> $Op<&'r XprWrapper<R>> for XprWrapper<L> {
+        impl<'r, L: Assign, R: Assign> $Op<&'r XprWrapper<R>> for XprWrapper<L> {
             type Output = XprWrapper<$Res<L, R>>;
             fn $op(self, other: &XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.xpr})}
             }
         }
 
-        impl<'l, L: Assign + Copy + Clone, R: Assign + Copy + Clone> $Op<XprWrapper<R>> for &'l XprWrapper<L> {
+        impl<'l, L: Assign, R: Assign> $Op<XprWrapper<R>> for &'l XprWrapper<L> {
             type Output = XprWrapper<$Res<L, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.xpr})}
             }
         }
 
-        impl<'l, 'r, L: Assign + Copy + Clone, R: Assign + Copy + Clone> $Op<&'r XprWrapper<R>> for &'l XprWrapper<L> {
+        impl<'l, 'r, L: Assign, R: Assign> $Op<&'r XprWrapper<R>> for &'l XprWrapper<L> {
             type Output = XprWrapper<$Res<L, R>>;
             fn $op(self, other: &XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: other.xpr})}
@@ -274,56 +274,56 @@ macro_rules! impl_bin_op(
             }
         }
 
-        impl<L: Assign + Copy + Clone> $Op<f64> for XprWrapper<L> {
+        impl<L: Assign> $Op<f64> for XprWrapper<L> {
             type Output = XprWrapper<$Res<L, ConstantXpr>>;
             fn $op(self, other: f64) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: constant(other)})} 
             }
         }
 
-        impl<'r, L: Assign + Copy + Clone> $Op<&'r f64> for XprWrapper<L> {
+        impl<'r, L: Assign> $Op<&'r f64> for XprWrapper<L> {
             type Output = XprWrapper<$Res<L, ConstantXpr>>;
             fn $op(self, other: &f64) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: constant(*other)})} 
             }
         }
 
-        impl<'l, L: Assign + Copy + Clone> $Op<f64> for &'l XprWrapper<L> {
+        impl<'l, L: Assign> $Op<f64> for &'l XprWrapper<L> {
             type Output = XprWrapper<$Res<L, ConstantXpr>>;
             fn $op(self, other: f64) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: constant(other)})} 
             }
         }
 
-        impl<'l, 'r, L: Assign + Copy + Clone> $Op<&'r f64> for &'l XprWrapper<L> {
+        impl<'l, 'r, L: Assign> $Op<&'r f64> for &'l XprWrapper<L> {
             type Output = XprWrapper<$Res<L, ConstantXpr>>;
             fn $op(self, other: &f64) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: self.xpr, r: constant(*other)})} 
             }
         }
 
-        impl<R: Assign + Copy + Clone> $Op<XprWrapper<R>> for f64 {
+        impl<R: Assign> $Op<XprWrapper<R>> for f64 {
             type Output = XprWrapper<$Res<ConstantXpr, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: constant(self), r: other.xpr})}
             }
         }
 
-        impl<'l, R: Assign + Copy + Clone> $Op<XprWrapper<R>> for &'l f64 {
+        impl<'l, R: Assign> $Op<XprWrapper<R>> for &'l f64 {
             type Output = XprWrapper<$Res<ConstantXpr, R>>;
             fn $op(self, other: XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: constant(*self), r: other.xpr})}
             }
         }
 
-        impl<'r, R: Assign + Copy + Clone> $Op<&'r XprWrapper<R>> for f64 {
+        impl<'r, R: Assign> $Op<&'r XprWrapper<R>> for f64 {
             type Output = XprWrapper<$Res<ConstantXpr, R>>;
             fn $op(self, other: &XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: constant(self), r: other.xpr})}
             }
         }
 
-        impl<'l, 'r, R: Assign + Copy + Clone> $Op<&'r XprWrapper<R>> for &'l f64 {
+        impl<'l, 'r, R: Assign> $Op<&'r XprWrapper<R>> for &'l f64 {
             type Output = XprWrapper<$Res<ConstantXpr, R>>;
             fn $op(self, other: &XprWrapper<R>) -> Self::Output {
                 Self::Output{xpr: $Res(BinXpr{l: constant(*self), r: other.xpr})}

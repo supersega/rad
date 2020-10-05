@@ -6,7 +6,7 @@ use super::assign::Assign;
 /// wrapper class as a result of of it. All expressions
 /// in this crate should implement Assign trait.
 #[derive(Copy, Clone, Debug)]
-pub struct XprWrapper<T: Assign + Copy + Clone> {
+pub struct XprWrapper<T: Assign> {
     /// 'xpr' - underlying expression.
     pub(crate) xpr: T
 }

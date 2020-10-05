@@ -30,7 +30,7 @@ impl Assign for Dual {
     }
 }
 
-impl<T: Assign + Copy + Clone> From<XprWrapper<T>> for Dual {
+impl<T: Assign> From<XprWrapper<T>> for Dual {
     fn from(wxpr: XprWrapper<T>) -> Self {
         let mut val = Dual::new(0.0);
         wxpr.xpr.assign(&mut val);
