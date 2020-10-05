@@ -86,6 +86,19 @@ impl<E> Assign for CosXpr<E> where
     }
 }
 
+/// Sqrt expression
+#[derive(Copy, Clone, Debug)]
+pub struct SqrtXpr<Op: Assign>(UnXpr<Op>);
+
+impl<E> Assign for SqrtXpr<E> where 
+    E: Assign + Assign {
+    fn assign(&self, other: &mut Dual) {
+        self.0.op.assign(other);
+        other.val = other.val.sqrt();
+        other.der.set( other.der.get() / other.val );
+    }
+}
+
 macro_rules! un_op_dual(
     ($op: ident, $Res: ident) => {
         /// $op operation
@@ -108,4 +121,5 @@ macro_rules! un_op_xpr(
 impl<E: Assign> XprWrapper<E> {
     un_op_xpr!(sin, SinXpr, E);
     un_op_xpr!(cos, CosXpr, E);
+    un_op_xpr!(sqrt, SqrtXpr, E);
 }
