@@ -111,6 +111,20 @@ impl<E> Assign for LnXpr<E> where
         other.val = other.val.ln();
     }
 }
+
+/// Exponent expression
+#[derive(Copy, Clone, Debug)]
+pub struct ExpXpr<Op: Assign>(UnXpr<Op>);
+
+impl<E> Assign for ExpXpr<E> where 
+    E: Assign + Assign {
+    fn assign(&self, other: &mut Dual) {
+        self.0.op.assign(other);
+        other.val = other.val.exp();
+        other.der.set( other.der.get() * other.val );
+    }
+}
+
 macro_rules! un_op_dual(
     ($op: ident, $Res: ident) => {
         /// $op operation
@@ -123,6 +137,7 @@ impl Dual {
     un_op_dual!(cos, CosXpr);
     un_op_dual!(sqrt, SqrtXpr);
     un_op_dual!(ln, LnXpr);
+    un_op_dual!(exp, ExpXpr);
 }
 
 macro_rules! un_op_xpr(
@@ -137,4 +152,5 @@ impl<E: Assign> XprWrapper<E> {
     un_op_xpr!(cos, CosXpr, E);
     un_op_xpr!(sqrt, SqrtXpr, E);
     un_op_xpr!(ln, LnXpr, E);
+    un_op_xpr!(exp, ExpXpr, E);
 }

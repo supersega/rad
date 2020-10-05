@@ -433,6 +433,20 @@ mod test_math_functions {
         let nn_ln = |x: Dual| -> Dual { (x * x + 1.0).ln().into() };
         derivative!(nn_ln(x), x).approx_eq(2.0 * x.val() / (x.val() * x.val() + 1.0), F64Margin::default())
     }
+
+    #[quickcheck]
+    fn exp_test(x: Dual) -> bool {
+        let exp = |x: Dual| -> Dual { x.exp().into() };
+        derivative!(exp(x), x).approx_eq(x.val().exp(), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn exp_sum_test(x: Dual, y: Dual) -> bool {
+        let exp_sum = |x: Dual, y: Dual| -> Dual { (x * x + y * y).exp().into() };
+        let aux = (x.val() * x.val() + y.val() * y.val()).exp();
+        derivative!(exp_sum(x, y), x).approx_eq(2.0 * x.val() * aux, F64Margin::default()) &&
+        derivative!(exp_sum(x, y), y).approx_eq(2.0 * y.val() * aux, F64Margin::default())
+    }
 }
 
 #[cfg(test)]
