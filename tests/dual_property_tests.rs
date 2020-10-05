@@ -383,6 +383,23 @@ mod tests_value {
 }
 
 #[cfg(test)]
+mod test_math_functions {
+    use super::*;
+
+    #[quickcheck]
+    fn sin_test(x: Dual) -> bool {
+        let sin = |x: Dual| -> Dual { x.sin().into() };
+        derivative!(sin(x), x).approx_eq(x.val().cos(), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn cos_test(x: Dual) -> bool {
+        let cos = |x: Dual| -> Dual { x.cos().into() };
+        derivative!(cos(x), x).approx_eq(-x.val().sin(), F64Margin::default())
+    }
+}
+
+#[cfg(test)]
 mod tests_derivative {
     use super::*;
 
