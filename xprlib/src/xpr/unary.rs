@@ -68,8 +68,8 @@ impl<E> Assign for SinXpr<E> where
     E: Assign + Assign {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
-        other.val = other.val.sin();
         other.der.set(other.der.get() * other.val.cos());
+        other.val = other.val.sin();
     }
 }
 
@@ -81,8 +81,8 @@ impl<E> Assign for CosXpr<E> where
     E: Assign + Assign {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
-        other.val = other.val.cos();
         other.der.set( - other.der.get() * other.val.sin());
+        other.val = other.val.cos();
     }
 }
 
