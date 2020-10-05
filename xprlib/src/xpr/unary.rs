@@ -95,7 +95,7 @@ impl<E> Assign for SqrtXpr<E> where
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
         other.val = other.val.sqrt();
-        other.der.set( other.der.get() / other.val );
+        other.der.set( other.der.get() / (2.0 * other.val) );
     }
 }
 
