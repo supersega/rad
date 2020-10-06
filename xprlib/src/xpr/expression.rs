@@ -3,7 +3,7 @@ use crate::dual::Dual;
 /// Trait to assign expression to Dual number. By 
 /// default assign_add, assign_sub create temporary
 /// variables, for some cases we can optimize that.
-pub trait Assign: Copy + Clone {
+pub trait Xpr: Copy + Clone {
     /// Assign expression to Dual number.
     /// 
     /// # Arguments 
@@ -62,4 +62,15 @@ pub trait Assign: Copy + Clone {
         self.assign(&mut aux);
         aux.assign_div(target);
     }
+}
+
+/// Wrap any expression into this 'holder'. This is
+/// a workaround for generic operator overloading.
+/// All operations in this library must return this
+/// wrapper class as a result of of it. All expressions
+/// in this crate should implement Xpr trait.
+#[derive(Copy, Clone, Debug)]
+pub struct XprWrapper<T: Xpr> {
+    /// 'xpr' - underlying expression.
+    pub(crate) xpr: T
 }

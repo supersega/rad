@@ -1,5 +1,5 @@
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign};
-use super::{assign::Assign, wrapper::XprWrapper};
+use super::{expression::{Xpr, XprWrapper}};
 use crate::dual::Dual;
 
 macro_rules! impl_assign_op(
@@ -9,7 +9,7 @@ macro_rules! impl_assign_op(
             fn $op(&mut self, other: Dual) { other.$fun(self); }
         }
         /// $Op operation XprWrapper to Dual number.
-        impl<E: Assign> $Op<XprWrapper<E>> for Dual {
+        impl<E: Xpr> $Op<XprWrapper<E>> for Dual {
             fn $op(&mut self, other: XprWrapper<E>) { other.xpr.$fun(self); }
         }
     }

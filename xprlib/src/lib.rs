@@ -4,4 +4,3 @@ pub mod xpr;
 
 pub use cmp::*;
 pub use dual::*;
-pub use xpr::*;

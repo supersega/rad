@@ -1,4 +1,4 @@
-use super::assign::Assign;
+use super::expression::{Xpr, XprWrapper};
 use crate::dual::Dual;
 
 /// Struct to hold constant expression.
@@ -8,8 +8,8 @@ pub struct ConstantXpr {
     val: f64,
 }
 
-/// Assign constant expression.
-impl Assign for ConstantXpr {
+/// Xpr constant expression.
+impl Xpr for ConstantXpr {
     fn assign(&self, other: &mut Dual) {
         other.val = self.val;
     }
@@ -29,3 +29,7 @@ impl Assign for ConstantXpr {
 
 /// Create constant expression.
 pub(crate) fn constant(val: f64) -> ConstantXpr {ConstantXpr { val }}
+
+impl Into<XprWrapper<ConstantXpr>> for f64 {
+    fn into(self) -> XprWrapper<ConstantXpr> { XprWrapper { xpr: constant(self)} }
+}

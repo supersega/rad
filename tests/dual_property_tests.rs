@@ -447,6 +447,12 @@ mod test_math_functions {
         derivative!(exp_sum(x, y), x).approx_eq(2.0 * x.val() * aux, F64Margin::default()) &&
         derivative!(exp_sum(x, y), y).approx_eq(2.0 * y.val() * aux, F64Margin::default())
     }
+
+    #[quickcheck]
+    fn pow_test(x: Dual, deg: f64) -> bool {
+        let powf = |x: Dual, deg: f64| -> Dual { x.powf(deg).into() };
+        derivative!(powf(x, deg), x).approx_eq(deg * x.val().powf(deg - 1.0), F64Margin::default())
+    }
 }
 
 #[cfg(test)]

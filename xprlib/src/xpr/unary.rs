@@ -1,21 +1,21 @@
 use std::ops::Neg;
-use super::{assign::Assign, wrapper::XprWrapper};
+use super::expression::{Xpr, XprWrapper};
 use crate::dual::Dual;
 
 /// Unary expression holder.
 #[derive(Copy, Clone, Debug)]
 pub struct UnXpr<Op> 
-where Op: Assign {
+where Op: Xpr {
     /// operand of current expression.
     op : Op,
 }
 
 /// Negate expression
 #[derive(Copy, Clone, Debug)]
-pub struct NegXpr<Op: Assign>(UnXpr<Op>);
+pub struct NegXpr<Op: Xpr>(UnXpr<Op>);
 
-impl<E> Assign for NegXpr<E> where 
-    E: Assign + Assign {
+impl<E> Xpr for NegXpr<E> where 
+    E: Xpr + Xpr {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
         other.neagate();
@@ -49,7 +49,7 @@ macro_rules! impl_un_op(
             }
         }
         
-        impl<E: Assign> $Op for XprWrapper<E> {
+        impl<E: Xpr> $Op for XprWrapper<E> {
             type Output = XprWrapper<$Res<E>>;
             fn $op(self) -> Self::Output {
                 Self::Output{xpr: $Res(UnXpr{ op: self.xpr })}
@@ -62,10 +62,10 @@ impl_un_op!(Neg, neg, NegXpr);
 
 /// Sinus expression
 #[derive(Copy, Clone, Debug)]
-pub struct SinXpr<Op: Assign>(UnXpr<Op>);
+pub struct SinXpr<Op: Xpr>(UnXpr<Op>);
 
-impl<E> Assign for SinXpr<E> where 
-    E: Assign + Assign {
+impl<E> Xpr for SinXpr<E> where 
+    E: Xpr + Xpr {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
         other.der.set(other.der.get() * other.val.cos());
@@ -75,10 +75,10 @@ impl<E> Assign for SinXpr<E> where
 
 /// Cosinus expression
 #[derive(Copy, Clone, Debug)]
-pub struct CosXpr<Op: Assign>(UnXpr<Op>);
+pub struct CosXpr<Op: Xpr>(UnXpr<Op>);
 
-impl<E> Assign for CosXpr<E> where 
-    E: Assign + Assign {
+impl<E> Xpr for CosXpr<E> where 
+    E: Xpr + Xpr {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
         other.der.set( - other.der.get() * other.val.sin());
@@ -88,10 +88,10 @@ impl<E> Assign for CosXpr<E> where
 
 /// Sqrt expression
 #[derive(Copy, Clone, Debug)]
-pub struct SqrtXpr<Op: Assign>(UnXpr<Op>);
+pub struct SqrtXpr<Op: Xpr>(UnXpr<Op>);
 
-impl<E> Assign for SqrtXpr<E> where 
-    E: Assign + Assign {
+impl<E> Xpr for SqrtXpr<E> where 
+    E: Xpr + Xpr {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
         other.val = other.val.sqrt();
@@ -101,10 +101,10 @@ impl<E> Assign for SqrtXpr<E> where
 
 /// Ln expression
 #[derive(Copy, Clone, Debug)]
-pub struct LnXpr<Op: Assign>(UnXpr<Op>);
+pub struct LnXpr<Op: Xpr>(UnXpr<Op>);
 
-impl<E> Assign for LnXpr<E> where 
-    E: Assign + Assign {
+impl<E> Xpr for LnXpr<E> where 
+    E: Xpr + Xpr {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
         other.der.set( other.der.get() / other.val );
@@ -114,10 +114,10 @@ impl<E> Assign for LnXpr<E> where
 
 /// Exponent expression
 #[derive(Copy, Clone, Debug)]
-pub struct ExpXpr<Op: Assign>(UnXpr<Op>);
+pub struct ExpXpr<Op: Xpr>(UnXpr<Op>);
 
-impl<E> Assign for ExpXpr<E> where 
-    E: Assign + Assign {
+impl<E> Xpr for ExpXpr<E> where 
+    E: Xpr + Xpr {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
         other.val = other.val.exp();
@@ -147,7 +147,7 @@ macro_rules! un_op_xpr(
     };
 );
 
-impl<E: Assign> XprWrapper<E> {
+impl<E: Xpr> XprWrapper<E> {
     un_op_xpr!(sin, SinXpr, E);
     un_op_xpr!(cos, CosXpr, E);
     un_op_xpr!(sqrt, SqrtXpr, E);
