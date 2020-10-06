@@ -1,25 +1,21 @@
 use std::ops::Neg;
-use super::{assign::Assign, expression::{Xpr, XprWrapper}};
+use super::expression::{Xpr, XprWrapper};
 use crate::dual::Dual;
 
 /// Unary expression holder.
 #[derive(Copy, Clone, Debug)]
-pub struct UnXpr<Op> where Op: Xpr + Copy + Clone {
+pub struct UnXpr<Op> 
+where Op: Xpr {
     /// operand of current expression.
     op : Op,
 }
 
 /// Negate expression
 #[derive(Copy, Clone, Debug)]
-pub struct NegXpr<Op: Xpr + Copy + Clone>(UnXpr<Op>);
+pub struct NegXpr<Op: Xpr>(UnXpr<Op>);
 
-impl<Op> Xpr for NegXpr<Op> where 
-    Op: Xpr + Copy + Clone {
-    fn value(&self) -> f64 { - self.0.op.value() }
-}
-
-impl<E> Assign for NegXpr<E> where 
-    E: Xpr + Copy + Clone + Assign {
+impl<E> Xpr for NegXpr<E> where 
+    E: Xpr + Xpr {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
         other.neagate();
@@ -53,7 +49,7 @@ macro_rules! impl_un_op(
             }
         }
         
-        impl<E: Xpr + Copy + Clone> $Op for XprWrapper<E> {
+        impl<E: Xpr> $Op for XprWrapper<E> {
             type Output = XprWrapper<$Res<E>>;
             fn $op(self) -> Self::Output {
                 Self::Output{xpr: $Res(UnXpr{ op: self.xpr })}
@@ -66,39 +62,69 @@ impl_un_op!(Neg, neg, NegXpr);
 
 /// Sinus expression
 #[derive(Copy, Clone, Debug)]
-pub struct SinXpr<Op: Xpr + Copy + Clone>(UnXpr<Op>);
+pub struct SinXpr<Op: Xpr>(UnXpr<Op>);
 
-impl<Op> Xpr for SinXpr<Op> where 
-    Op: Xpr + Copy + Clone {
-    fn value(&self) -> f64 { self.0.op.value().sin() }
-}
-
-impl<E> Assign for SinXpr<E> where 
-    E: Xpr + Copy + Clone + Assign {
+impl<E> Xpr for SinXpr<E> where 
+    E: Xpr + Xpr {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
-        other.val = other.val.sin();
         other.der.set(other.der.get() * other.val.cos());
+        other.val = other.val.sin();
     }
 }
 
 /// Cosinus expression
 #[derive(Copy, Clone, Debug)]
-pub struct CosXpr<Op: Xpr + Copy + Clone>(UnXpr<Op>);
+pub struct CosXpr<Op: Xpr>(UnXpr<Op>);
 
-impl<Op> Xpr for CosXpr<Op> where 
-    Op: Xpr + Copy + Clone {
-    fn value(&self) -> f64 { self.0.op.value().cos() }
-}
-
-impl<E> Assign for CosXpr<E> where 
-    E: Xpr + Copy + Clone + Assign {
+impl<E> Xpr for CosXpr<E> where 
+    E: Xpr + Xpr {
     fn assign(&self, other: &mut Dual) {
         self.0.op.assign(other);
-        other.val = other.val.cos();
         other.der.set( - other.der.get() * other.val.sin());
+        other.val = other.val.cos();
     }
 }
+
+/// Sqrt expression
+#[derive(Copy, Clone, Debug)]
+pub struct SqrtXpr<Op: Xpr>(UnXpr<Op>);
+
+impl<E> Xpr for SqrtXpr<E> where 
+    E: Xpr + Xpr {
+    fn assign(&self, other: &mut Dual) {
+        self.0.op.assign(other);
+        other.val = other.val.sqrt();
+        other.der.set( other.der.get() / (2.0 * other.val) );
+    }
+}
+
+/// Ln expression
+#[derive(Copy, Clone, Debug)]
+pub struct LnXpr<Op: Xpr>(UnXpr<Op>);
+
+impl<E> Xpr for LnXpr<E> where 
+    E: Xpr + Xpr {
+    fn assign(&self, other: &mut Dual) {
+        self.0.op.assign(other);
+        other.der.set( other.der.get() / other.val );
+        other.val = other.val.ln();
+    }
+}
+
+/// Exponent expression
+#[derive(Copy, Clone, Debug)]
+pub struct ExpXpr<Op: Xpr>(UnXpr<Op>);
+
+impl<E> Xpr for ExpXpr<E> where 
+    E: Xpr + Xpr {
+    fn assign(&self, other: &mut Dual) {
+        self.0.op.assign(other);
+        other.val = other.val.exp();
+        other.der.set( other.der.get() * other.val );
+    }
+}
+
 macro_rules! un_op_dual(
     ($op: ident, $Res: ident) => {
         /// $op operation
@@ -108,6 +134,10 @@ macro_rules! un_op_dual(
 
 impl Dual {
     un_op_dual!(sin, SinXpr);
+    un_op_dual!(cos, CosXpr);
+    un_op_dual!(sqrt, SqrtXpr);
+    un_op_dual!(ln, LnXpr);
+    un_op_dual!(exp, ExpXpr);
 }
 
 macro_rules! un_op_xpr(
@@ -117,6 +147,10 @@ macro_rules! un_op_xpr(
     };
 );
 
-impl<E: Xpr + Copy + Clone> XprWrapper<E> {
+impl<E: Xpr> XprWrapper<E> {
     un_op_xpr!(sin, SinXpr, E);
+    un_op_xpr!(cos, CosXpr, E);
+    un_op_xpr!(sqrt, SqrtXpr, E);
+    un_op_xpr!(ln, LnXpr, E);
+    un_op_xpr!(exp, ExpXpr, E);
 }

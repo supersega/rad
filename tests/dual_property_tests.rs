@@ -383,6 +383,79 @@ mod tests_value {
 }
 
 #[cfg(test)]
+mod test_math_functions {
+    use super::*;
+
+    #[quickcheck]
+    fn sin_test(x: Dual) -> bool {
+        let sin = |x: Dual| -> Dual { x.sin().into() };
+        derivative!(sin(x), x).approx_eq(x.val().cos(), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn sin_sum_test(x: Dual, y: Dual) -> bool {
+        let sin_sum = |x: Dual, y: Dual| -> Dual { (x + y).sin().into() };
+        derivative!(sin_sum(x, y), x).approx_eq(Dual::from(y + x).val().cos(), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn cos_test(x: Dual) -> bool {
+        let cos = |x: Dual| -> Dual { x.cos().into() };
+        derivative!(cos(x), x).approx_eq(-x.val().sin(), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn cos_sum_test(x: Dual, y: Dual) -> bool {
+        let cos_sum = |x: Dual, y: Dual| -> Dual { (x + y).cos().into() };
+        derivative!(cos_sum(x, y), x).approx_eq(-Dual::from(y + x).val().sin(), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn sqrt_test(x: Dual) -> bool {
+        let sqrt = |x: Dual| -> Dual { x.sqrt().into() };
+        derivative!(sqrt(x), x).approx_eq(1.0 / (2.0 * x.val().sqrt()), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn sqrt_sum_test(x: Dual, y: Dual) -> bool {
+        let sqrt_sum = |x: Dual, y: Dual| -> Dual { (x + y).sqrt().into() };
+        derivative!(sqrt_sum(x, y), x).approx_eq(1.0 / (2.0 * (x.val() + y.val()).sqrt()), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn ln_test(x: Dual) -> bool {
+        let nn_ln = |x: Dual| -> Dual { Dual::from(x * x + 1.0).ln().into() };
+        derivative!(nn_ln(x), x).approx_eq(2.0 * x.val() / (x.val() * x.val() + 1.0), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn ln_sum_test(x: Dual) -> bool {
+        let nn_ln = |x: Dual| -> Dual { (x * x + 1.0).ln().into() };
+        derivative!(nn_ln(x), x).approx_eq(2.0 * x.val() / (x.val() * x.val() + 1.0), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn exp_test(x: Dual) -> bool {
+        let exp = |x: Dual| -> Dual { x.exp().into() };
+        derivative!(exp(x), x).approx_eq(x.val().exp(), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn exp_sum_test(x: Dual, y: Dual) -> bool {
+        let exp_sum = |x: Dual, y: Dual| -> Dual { (x * x + y * y).exp().into() };
+        let aux = (x.val() * x.val() + y.val() * y.val()).exp();
+        derivative!(exp_sum(x, y), x).approx_eq(2.0 * x.val() * aux, F64Margin::default()) &&
+        derivative!(exp_sum(x, y), y).approx_eq(2.0 * y.val() * aux, F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn pow_test(x: Dual, deg: f64) -> bool {
+        let powf = |x: Dual, deg: f64| -> Dual { x.powf(deg).into() };
+        derivative!(powf(x, deg), x).approx_eq(deg * x.val().powf(deg - 1.0), F64Margin::default())
+    }
+}
+
+#[cfg(test)]
 mod tests_derivative {
     use super::*;
 
