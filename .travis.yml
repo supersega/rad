@@ -26,9 +26,8 @@ script:
   - cargo build --verbose --workspace 
   - cargo test --verbose --workspace 
   - |
-    zip -0 ccov.zip `find . \( -name "rad*.gc*" \) -print`;
-    grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" -o lcov.info;
-    bash <(curl -s https://codecov.io/bash) -f lcov.info;
+    grcov ./target/debug/ -s . -t lcov --llvm --branch --ignore-not-existing -o ./target/debug/coverage;
+    bash <(curl -s https://codecov.io/bash) -f ./target/debug/coverage;
 
 branches:
   only:
