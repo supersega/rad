@@ -12,7 +12,7 @@ env:
 matrix:
   include:
     - os: linux
-      rust: nightly
+      rust: stable
 
 before_install:
   - set -e
