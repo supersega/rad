@@ -18,6 +18,7 @@ before_install:
   - set -e
   - rustup self update
   - curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -
+  - sudo apt-get -y install lcov
 
 script:
   - export CARGO_INCREMENTAL=0
