@@ -499,6 +499,15 @@ mod test_math_functions {
             F64Margin::default(),
         )
     }
+
+    #[quickcheck]
+    fn powf_xpr_dual_test(x: Dual, y: Dual, deg: Dual) -> bool {
+        let powf = |x: Dual, y: Dual, deg: Dual| -> Dual { (x * y).powf(deg).into() };
+        derivative!(powf(x, y, deg), x).approx_eq(
+            deg.val() * (x.val() * y.val()).powf(deg.val() - 1.0) * y.val(),
+            F64Margin::default(),
+        )
+    }
 }
 
 #[cfg(test)]
