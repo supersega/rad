@@ -380,6 +380,12 @@ mod tests_value {
     fn ordering_trans(a: Dual, b: Dual, c: Dual) -> bool {
         (a < b && b < c) == (a < b && a < c && b < c)
     }
+
+    #[quickcheck]
+    fn ordering_sum_mul(a: Dual, b: Dual, c: Dual) -> bool {
+        let c = c * c + 1.0;
+        (Dual::from(a * (c + c)) >= b * (c + c)) == (a >= b)
+    }
 }
 
 #[cfg(test)]
