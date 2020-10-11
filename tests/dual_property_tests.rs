@@ -407,6 +407,18 @@ mod tests_value {
         let y = y * y + 1.0;
         x / (-y) == - x / y
     }
+
+    #[quickcheck]
+    fn sub_add_xpr(x: Dual, y: Dual, z: Dual) -> bool {
+        let add = y + z;
+        Dual::from(x - z - add).approx_eq(Dual::from(x - 2.0 * z - y), (EPSILON, ULP))
+    }
+
+    #[quickcheck]
+    fn mul_sub_xpr(x: Dual, y: Dual, z: Dual) -> bool {
+        let add = y - z;
+        Dual::from((x - z) * add).approx_eq(Dual::from(x * add - z * add), (EPSILON, ULP))
+    }
 }
 
 #[cfg(test)]
