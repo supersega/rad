@@ -9,7 +9,7 @@ use float_cmp::{ApproxEq, F64Margin};
 
 use rad::{derivative, Dual};
 
-const EPSILON: f64 = f64::EPSILON * 10000.0;
+const EPSILON: f64 = f64::EPSILON * 1000000.0;
 const ULP: i64 = 5;
 
 #[cfg(test)]
@@ -518,6 +518,25 @@ mod test_math_functions {
         derivative!(powf(x, y, deg), x).approx_eq(
             deg.val() * (x.val() * y.val()).powf(deg.val() - 1.0) * y.val(),
             F64Margin::default(),
+        )
+    }
+
+    #[quickcheck]
+    fn sin_sum_dual_test(x: Dual, y: Dual) -> bool {
+        let sin_sum = |x: Dual, y: Dual| -> Dual { (x.sin() * y.cos() + x.cos() * y.sin()).into()};
+
+        derivative!(sin_sum(x, y), x).approx_eq(
+            (x.val() + y.val()).cos(),
+            (EPSILON, ULP),
+        )
+    }
+
+    #[quickcheck]
+    fn powf_xpr_xpr_test(x: Dual, y: Dual, deg: Dual) -> bool {
+        let powf = |x: Dual, y: Dual, deg: Dual| -> Dual { (x * y).powf(2.0 * deg).into() };
+        derivative!(powf(x, y, deg), x).approx_eq(
+            2.0 * deg.val() * (x.val() * y.val()).powf(2.0 * deg.val() - 1.0) * y.val(),
+            (EPSILON, ULP),
         )
     }
 }
