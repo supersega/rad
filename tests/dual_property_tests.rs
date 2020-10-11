@@ -7,7 +7,7 @@ extern crate quickcheck_macros;
 #[cfg(test)]
 use float_cmp::{ApproxEq, F64Margin};
 
-use rad::{Dual, derivative};
+use rad::{derivative, Dual};
 
 const EPSILON: f64 = f64::EPSILON * 10000.0;
 const ULP: i64 = 5;
@@ -23,7 +23,7 @@ mod tests_value {
 
     #[quickcheck]
     fn unity_property(val: Dual) -> bool {
-        Dual::from(val *  Dual::from(1.0)).approx_eq(val, F64Margin::default())
+        Dual::from(val * Dual::from(1.0)).approx_eq(val, F64Margin::default())
     }
 
     #[quickcheck]
@@ -407,7 +407,8 @@ mod test_math_functions {
     #[quickcheck]
     fn cos_sum_test(x: Dual, y: Dual) -> bool {
         let cos_sum = |x: Dual, y: Dual| -> Dual { (x + y).cos().into() };
-        derivative!(cos_sum(x, y), x).approx_eq(-Dual::from(y + x).val().sin(), F64Margin::default())
+        derivative!(cos_sum(x, y), x)
+            .approx_eq(-Dual::from(y + x).val().sin(), F64Margin::default())
     }
 
     #[quickcheck]
@@ -419,19 +420,28 @@ mod test_math_functions {
     #[quickcheck]
     fn sqrt_sum_test(x: Dual, y: Dual) -> bool {
         let sqrt_sum = |x: Dual, y: Dual| -> Dual { (x + y).sqrt().into() };
-        derivative!(sqrt_sum(x, y), x).approx_eq(1.0 / (2.0 * (x.val() + y.val()).sqrt()), F64Margin::default())
+        derivative!(sqrt_sum(x, y), x).approx_eq(
+            1.0 / (2.0 * (x.val() + y.val()).sqrt()),
+            F64Margin::default(),
+        )
     }
 
     #[quickcheck]
     fn ln_test(x: Dual) -> bool {
         let nn_ln = |x: Dual| -> Dual { Dual::from(x * x + 1.0).ln().into() };
-        derivative!(nn_ln(x), x).approx_eq(2.0 * x.val() / (x.val() * x.val() + 1.0), F64Margin::default())
+        derivative!(nn_ln(x), x).approx_eq(
+            2.0 * x.val() / (x.val() * x.val() + 1.0),
+            F64Margin::default(),
+        )
     }
 
     #[quickcheck]
     fn ln_sum_test(x: Dual) -> bool {
         let nn_ln = |x: Dual| -> Dual { (x * x + 1.0).ln().into() };
-        derivative!(nn_ln(x), x).approx_eq(2.0 * x.val() / (x.val() * x.val() + 1.0), F64Margin::default())
+        derivative!(nn_ln(x), x).approx_eq(
+            2.0 * x.val() / (x.val() * x.val() + 1.0),
+            F64Margin::default(),
+        )
     }
 
     #[quickcheck]
@@ -444,8 +454,8 @@ mod test_math_functions {
     fn exp_sum_test(x: Dual, y: Dual) -> bool {
         let exp_sum = |x: Dual, y: Dual| -> Dual { (x * x + y * y).exp().into() };
         let aux = (x.val() * x.val() + y.val() * y.val()).exp();
-        derivative!(exp_sum(x, y), x).approx_eq(2.0 * x.val() * aux, F64Margin::default()) &&
-        derivative!(exp_sum(x, y), y).approx_eq(2.0 * y.val() * aux, F64Margin::default())
+        derivative!(exp_sum(x, y), x).approx_eq(2.0 * x.val() * aux, F64Margin::default())
+            && derivative!(exp_sum(x, y), y).approx_eq(2.0 * y.val() * aux, F64Margin::default())
     }
 
     #[quickcheck]
@@ -457,7 +467,10 @@ mod test_math_functions {
     #[quickcheck]
     fn powf_dual_test(x: Dual, deg: Dual) -> bool {
         let powf = |x: Dual, deg: Dual| -> Dual { x.powf(deg).into() };
-        derivative!(powf(x, deg), x).approx_eq(deg.val() * x.val().powf(deg.val() - 1.0), F64Margin::default())
+        derivative!(powf(x, deg), x).approx_eq(
+            deg.val() * x.val().powf(deg.val() - 1.0),
+            F64Margin::default(),
+        )
     }
 }
 
@@ -487,14 +500,20 @@ mod tests_derivative {
     fn sum_property(x: Dual) -> bool {
         let f1 = |x: Dual| -> Dual { (x + x).into() };
         let f2 = |x: Dual| -> Dual { (x * x).into() };
-        derivative!(|x: Dual| -> Dual { (f1(x) + f2(x)).into() }(x), x).approx_eq(derivative!(f1(x), x) + derivative!(f2(x), x), F64Margin::default())
+        derivative!(|x: Dual| -> Dual { (f1(x) + f2(x)).into() }(x), x).approx_eq(
+            derivative!(f1(x), x) + derivative!(f2(x), x),
+            F64Margin::default(),
+        )
     }
 
     #[quickcheck]
     fn mul_property(x: Dual) -> bool {
         let f1 = |x: Dual| -> Dual { (x + x).into() };
         let f2 = |x: Dual| -> Dual { (x * x).into() };
-        derivative!(|x: Dual| -> Dual { (f1(x) * f2(x)).into() }(x), x).approx_eq(derivative!(f1(x), x) * f2(x).val() + derivative!(f2(x), x) * f1(x).val(), F64Margin::default())
+        derivative!(|x: Dual| -> Dual { (f1(x) * f2(x)).into() }(x), x).approx_eq(
+            derivative!(f1(x), x) * f2(x).val() + derivative!(f2(x), x) * f1(x).val(),
+            F64Margin::default(),
+        )
     }
 }
 

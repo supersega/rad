@@ -35,8 +35,14 @@ impl Xpr for ConstantXpr {
 }
 
 /// Create constant expression.
-pub(crate) fn constant(val: f64) -> ConstantXpr {ConstantXpr { val }}
+pub(crate) fn constant(val: f64) -> ConstantXpr {
+    ConstantXpr { val }
+}
 
 impl Into<XprWrapper<ConstantXpr>> for f64 {
-    fn into(self) -> XprWrapper<ConstantXpr> { XprWrapper { xpr: constant(self)} }
+    fn into(self) -> XprWrapper<ConstantXpr> {
+        XprWrapper {
+            xpr: constant(self),
+        }
+    }
 }

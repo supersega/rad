@@ -1,5 +1,5 @@
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign};
-use super::{expression::{Xpr, XprWrapper}};
+use super::expression::{Xpr, XprWrapper};
 use crate::dual::Dual;
 
 macro_rules! impl_assign_op(

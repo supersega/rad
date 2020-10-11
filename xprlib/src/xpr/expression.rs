@@ -1,20 +1,20 @@
 use crate::dual::Dual;
 
-/// Trait to assign expression to Dual number. By 
+/// Trait to assign expression to Dual number. By
 /// default assign_add, assign_sub create temporary
 /// variables, for some cases we can optimize that.
 pub trait Xpr: Copy + Clone {
     /// Assign expression to Dual number.
-    /// 
-    /// # Arguments 
+    ///
+    /// # Arguments
     /// 'target' - assign expression into target.
     fn assign(&self, target: &mut Dual);
 
     /// Assign sub to Dual number.
-    /// 
+    ///
     /// # Arguments
     /// 'target' - assign expression into target.
-    /// 
+    ///
     /// # Node
     /// Should be overridden if operation
     /// can avoid temporary variables
@@ -25,7 +25,7 @@ pub trait Xpr: Copy + Clone {
     }
 
     /// Assign add operation to Dual number.
-    /// 
+    ///
     /// # Arguments
     /// 'target' - assign expression into target.
     /// # Node
@@ -38,7 +38,7 @@ pub trait Xpr: Copy + Clone {
     }
 
     /// Assign mul operation to Dual number.
-    /// 
+    ///
     /// # Arguments
     /// 'target' - assign expression into target.
     /// # Node
@@ -51,7 +51,7 @@ pub trait Xpr: Copy + Clone {
     }
 
     /// Assign div operation to Dual number.
-    /// 
+    ///
     /// # Arguments
     /// 'target' - assign expression into target.
     /// # Node
@@ -64,7 +64,7 @@ pub trait Xpr: Copy + Clone {
     }
 
     /// Assign pow operation to Dual number.
-    /// 
+    ///
     /// # Arguments
     /// 'target' - assign expression into target.
     /// # Node
@@ -77,6 +77,29 @@ pub trait Xpr: Copy + Clone {
     }
 }
 
+/// Structure which represents binary expression
+#[derive(Copy, Clone, Debug)]
+pub struct BinXpr<L, R>
+where
+    L: Xpr,
+    R: Xpr,
+{
+    /// 'l' - the left part of expression.
+    pub(crate) l: L,
+    /// 'r' - the right part of expression.
+    pub(crate) r: R,
+}
+
+/// Unary expression holder.
+#[derive(Copy, Clone, Debug)]
+pub struct UnXpr<Op>
+where
+    Op: Xpr,
+{
+    /// operand of current expression.
+    pub(crate) op: Op,
+}
+
 /// Wrap any expression into this 'holder'. This is
 /// a workaround for generic operator overloading.
 /// All operations in this library must return this
@@ -85,5 +108,5 @@ pub trait Xpr: Copy + Clone {
 #[derive(Copy, Clone, Debug)]
 pub struct XprWrapper<T: Xpr> {
     /// 'xpr' - underlying expression.
-    pub(crate) xpr: T
+    pub(crate) xpr: T,
 }

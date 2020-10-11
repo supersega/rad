@@ -17,9 +17,9 @@ pub struct Dual {
 
 impl Dual {
     /// Create new Dual numbed form float number.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// 'val' - value of Dual number.
     pub fn new(val: f64) -> Self {
         Self {
@@ -29,24 +29,36 @@ impl Dual {
     }
 
     /// Set derivative to 1.0 value
-    pub fn seed(&self) { self.der.set(1.0) }
+    pub fn seed(&self) {
+        self.der.set(1.0)
+    }
+
     /// Set derivative to 0.0 value
-    pub fn unseed(&self) { self.der.set(0.0) }
+    pub fn unseed(&self) {
+        self.der.set(0.0)
+    }
+
     /// derivative of dual variable
-    pub fn der(&self) -> f64 { self.der.get() }
+    pub fn der(&self) -> f64 {
+        self.der.get()
+    }
+
     /// value of dual variable
-    pub fn val(&self) -> f64 { self.val }
+    pub fn val(&self) -> f64 {
+        self.val
+    }
+    
     /// negate dual value
-    pub(crate) fn neagate(&mut self) { 
-        self.val = - self.val;
+    pub(crate) fn neagate(&mut self) {
+        self.val = -self.val;
         self.der.set(-self.der.get());
     }
 }
 
 impl From<f64> for Dual {
     fn from(val: f64) -> Self {
-        Self { 
-            val, 
+        Self {
+            val,
             der: CopyCell::new(0.0),
         }
     }

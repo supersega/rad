@@ -1,12 +1,12 @@
-use super::{
-    binary::BinXpr,
-    expression::{Xpr, XprWrapper},
-};
+use super::expression::{BinXpr, Xpr, XprWrapper};
 use crate::dual::Dual;
 
 /// Powf expression structure which holds binary expression.
 #[derive(Copy, Clone, Debug)]
-pub struct PowfXpr<L: Xpr, R: Xpr>(BinXpr<L, R>);
+pub struct PowfXpr<L, R>(BinXpr<L, R>)
+where
+    L: Xpr,
+    R: Xpr;
 
 /// Implement Xpr trait for PowfXpr.
 impl<L: Xpr, R: Xpr> Xpr for PowfXpr<L, R> {
