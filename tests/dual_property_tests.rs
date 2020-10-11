@@ -386,6 +386,27 @@ mod tests_value {
         let c = c * c + 1.0;
         (Dual::from(a * (c + c)) >= b * (c + c)) == (a >= b)
     }
+
+    #[quickcheck]
+    fn neg_assign_add(x: Dual, y: Dual) -> bool {
+        x + (-y) == x - y
+    }
+
+    #[quickcheck]
+    fn neg_assign_sub(x: Dual, y: Dual) -> bool {
+        x - (-y) == x + y
+    }
+
+    #[quickcheck]
+    fn neg_assign_mul(x: Dual, y: Dual) -> bool {
+        x * (-y) == - x * y
+    }
+
+    #[quickcheck]
+    fn neg_assign_div(x: Dual, y: Dual) -> bool {
+        let y = y * y + 1.0;
+        x / (-y) == - x / y
+    }
 }
 
 #[cfg(test)]
