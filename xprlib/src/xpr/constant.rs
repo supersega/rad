@@ -25,6 +25,13 @@ impl Xpr for ConstantXpr {
     fn assign_mul(&self, target: &mut Dual) {
         target.val *= self.val;
     }
+
+    fn assign_pow(&self, target: &mut Dual) {
+        let pow = target.val.powf(self.val - 1.0);
+
+        target.der.set(pow * self.val * target.der.get());
+        target.val = pow * target.val;
+    }
 }
 
 /// Create constant expression.

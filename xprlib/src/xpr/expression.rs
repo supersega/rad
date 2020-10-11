@@ -62,6 +62,19 @@ pub trait Xpr: Copy + Clone {
         self.assign(&mut aux);
         aux.assign_div(target);
     }
+
+    /// Assign pow operation to Dual number.
+    /// 
+    /// # Arguments
+    /// 'target' - assign expression into target.
+    /// # Node
+    /// Should be overridden if operation
+    /// can avoid temporary variables
+    fn assign_pow(&self, target: &mut Dual) {
+        let mut aux: Dual = 0.0.into();
+        self.assign(&mut aux);
+        aux.assign_pow(target);
+    }
 }
 
 /// Wrap any expression into this 'holder'. This is

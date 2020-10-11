@@ -449,9 +449,15 @@ mod test_math_functions {
     }
 
     #[quickcheck]
-    fn powf_test(x: Dual, deg: f64) -> bool {
+    fn powf_f64_test(x: Dual, deg: f64) -> bool {
         let powf = |x: Dual, deg: f64| -> Dual { x.powf(deg).into() };
         derivative!(powf(x, deg), x).approx_eq(deg * x.val().powf(deg - 1.0), F64Margin::default())
+    }
+
+    #[quickcheck]
+    fn powf_dual_test(x: Dual, deg: Dual) -> bool {
+        let powf = |x: Dual, deg: Dual| -> Dual { x.powf(deg).into() };
+        derivative!(powf(x, deg), x).approx_eq(deg.val() * x.val().powf(deg.val() - 1.0), F64Margin::default())
     }
 }
 
