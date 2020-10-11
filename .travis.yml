@@ -18,7 +18,7 @@ before_install:
   - set -e
   - rustup self update
 
-before_script:
+install:
   - cargo install cargo-tarpaulin
 
 script:
